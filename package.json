@@ -1,0 +1,35 @@
+{
+  "name": "ebnf-compiler",
+  "version": "1.0.0",
+  "description": "EBNF Compiler Compiler.",
+  "main": "bin/ebnfcc.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/souzamonteiro/ebnf-compiler.git"
+  },
+  "keywords": [
+    "ebnf",
+    "compiler",
+    "compiler",
+    "lexer",
+    "parser",
+    "maiascript",
+    "javascript",
+    "c",
+    "c++"
+  ],
+  "author": "Roberto Luiz Souza Monteiro",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/souzamonteiro/ebnf-compiler/issues"
+  },
+  "homepage": "https://github.com/souzamonteiro/ebnf-compiler#readme"
+}
