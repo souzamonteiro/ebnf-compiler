@@ -1,2 +1,3 @@
-# ebnf-compiler
-EBNF Compiler Compiler
+# EBNF Compiler
+
+EBNF Compiler Compiler.
