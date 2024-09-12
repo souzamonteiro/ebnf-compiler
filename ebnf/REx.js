@@ -1869,6 +1869,6 @@ function main(args)
   }
 }
 
-//main(arguments);
+main(arguments);
 
 // End

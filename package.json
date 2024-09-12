@@ -31,5 +31,7 @@
   "bugs": {
     "url": "https://github.com/souzamonteiro/ebnf-compiler/issues"
   },
-  "homepage": "https://github.com/souzamonteiro/ebnf-compiler#readme"
+  "homepage": "https://github.com/souzamonteiro/ebnf-compiler#readme",
+  "dependencies": {
+  }
 }
