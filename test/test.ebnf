@@ -1,0 +1,29 @@
+(* Tiny calculator language *)
+
+%RULES%
+
+(* Basic characters *)
+digit      = #30 .. #39 ;          (* '0'..'9' *)
+uppercase  = #41 .. #5A ;          (* 'A'..'Z' *)
+lowercase  = #61 .. #7A ;          (* 'a'..'z' *)
+letter     = uppercase | lowercase ;
+identifier = letter ;
+
+(* Numbers *)
+number     = digit, { digit } ;
+
+(* Operators *)
+add_op     = "+" | "-" ;
+mul_op     = "*" | "/" ;
+
+(* Grammar rules *)
+program    = { statement } ;
+statement  = expression, ";" ;
+
+(* Expression with correct precedence *)
+expression = term, { add_op, term } ;
+term       = factor, { mul_op, factor } ;
+factor     = number | identifier | "(", expression, ")" ;
+
+(* Directive *)
+%END%

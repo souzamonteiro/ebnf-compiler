@@ -1,0 +1,72 @@
+%RULES%
+syntax = { (rule | comment | directive | space) } ;
+
+rule = identifier, spaces, equals, spaces, expression, spaces, semicolon ;
+expression = term, { spaces, pipe, spaces, term } ;
+term = factor, { spaces, comma, spaces, factor } ;
+factor = [ integer, asterisk | quantifier ], primary ;
+quantifier = asterisk | plus | question | l_brace, spaces, integer, [ comma, spaces, [ integer ] ], spaces, r_brace ;
+
+primary = identifier
+        | terminal
+        | optional
+        | repeat
+        | group
+        | special_sequence
+        | char_range
+        | hex_char ;
+
+optional = l_bracket, spaces, expression, spaces, r_bracket ;
+repeat = l_brace, spaces, expression, spaces, r_brace ;
+group = l_paren, spaces, expression, spaces, r_paren ;
+special_sequence = question, { character - question }, question ;
+
+directive = percent, identifier, [ l_paren, literal, r_paren ], percent ;
+
+%TOKENS%
+equals = "=" ;
+semicolon = ";" ;
+pipe = "|" ;
+comma = "," ;
+asterisk = "*" ;
+plus = "+" ;
+question = "?" ;
+l_bracket = "[" ;
+r_bracket = "]" ;
+l_brace = "{" ;
+r_brace = "}" ;
+l_paren = "(" ;
+r_paren = ")" ;
+dot_dot = ".." ;
+hash = "#" ;
+percent = "%" ;
+
+literal = string | identifier | integer | hex_char ;
+
+identifier = (letter | "_"), { letter | digit | "_" } ;
+
+terminal = '"', { string_char }, '"' | "'", { string_char }, "'" ;
+string_char = character - ('"' | "'" | "\") 
+            | escape_sequence
+            | unicode_escape ;
+escape_sequence = "\", ( "\" | "'" | '"' | "n" | "t" | "r" | "b" | "f" ) ;
+unicode_escape = "\u", hex_digit, hex_digit, hex_digit, hex_digit ;
+
+comment = block_comment | line_comment ;
+block_comment = "(*", { comment_char | block_comment }, "*)" ;
+line_comment = "//", { character - (#0A | #0D) }, ( #0A | #0D ) ;
+comment_char = character - "*" | "*", character - ")" ;
+
+character = ascii | unicode ;
+ascii = #00 .. #7F ;
+unicode = #80 .. #10FFFF ;
+
+integer = digit, { digit } ;
+letter = "A" .. "Z" | "a" .. "z" ;
+digit = "0" .. "9" ;
+hex_char = hash, hex_digit, hex_digit ;
+char_range = hex_char, spaces, dot_dot, spaces, hex_char ;
+hex_digit = "0" .. "9" | "A" .. "F" | "a" .. "f" ;
+
+spaces = space, { space } ;
+space = #20 | #09 | #0A | #0D ;

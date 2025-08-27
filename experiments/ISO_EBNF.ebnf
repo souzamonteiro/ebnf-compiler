@@ -1,0 +1,124 @@
+(* === ISO EBNF ESTENDIDA FORMAL === *)
+
+(* Definição de gramática *)
+grammar = syntax, [ lexicon ];
+syntax = { rule };
+rule = meta-identifier, "=", definitions-list, ";";
+definitions-list = single-definition, { "|", single-definition };
+single-definition = term, { ",", term };
+term = factor, [ exception ];
+exception = "-", factor;
+factor = [ integer, "*" ], primary;
+primary = optional-sequence | repeated-sequence | grouped-sequence | meta-identifier | terminal-string | special-sequence | empty-sequence;
+
+(* Sequências especiais *)
+optional-sequence = "[", definitions-list, "]";
+repeated-sequence = "{", definitions-list, "}";
+grouped-sequence = "(", definitions-list, ")";
+empty-sequence = "ε";
+
+(* Identificadores e terminais *)
+meta-identifier = letter, { letter | digit | "-" };
+terminal-string = "'", character - "'", { character - "'" }, "'" 
+                | '"', character - '"', { character - '"' }, '"';
+special-sequence = "?", { character - "?" }, "?";
+character = ? qualquer caractere Unicode ? ;
+
+(* Comentários *)
+comment = "(*", { comment-character }, "*)";
+comment-character = character - "*" | "*", character - ")";
+
+(* === EXTENSÃO PARA INTERVALOS DE CARACTERES === *)
+
+(* Caractere hexadecimal *)
+hex-char = "#", hex-digit, hex-digit;
+hex-digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" 
+          | "A" | "B" | "C" | "D" | "E" | "F" | "a" | "b" | "c" | "d" | "e" | "f";
+
+(* Intervalo de caracteres *)
+char-range = lower-bound, "..", upper-bound;
+lower-bound = hex-char | single-char;
+upper-bound = hex-char | single-char;
+single-char = "'", character, "'" ;
+
+(* Conjunto de caracteres *)
+char-set = "{", set-element, { ",", set-element }, "}";
+set-element = hex-char | char-range | single-char;
+
+(* Definição de caractere estendida *)
+character-def = terminal-string | hex-char | char-set | char-range;
+
+(* === EXEMPLOS DE USO VÁLIDOS === *)
+
+(* Intervalos hexadecimais *)
+null-character = #00;
+ascii-character = #00 .. #7F;
+extended-ascii = #00 .. #FF;
+
+(* Conjuntos de caracteres *)
+whitespace-chars = { #09, #0A, #0D, #20 };
+digit-chars = { #30 .. #39 };
+lowercase-chars = { #61 .. #7A };
+uppercase-chars = { #41 .. #5A };
+letter-chars = { #41..5A, #61..7A };
+
+(* Notação mista *)
+identifier-chars = { #30..39, #41..5A, #61..7A, "_" };
+basic-symbols = { #21..2F, #3A..40, #5B..60, #7B..7E };
+
+(* === DEFINIÇÕES LÉXICAS (OPCIONAL) === *)
+
+lexicon = { lexical-rule };
+lexical-rule = meta-identifier, "=", terminal-string, ";";
+
+(* === PRODUÇÕES BÁSICAS === *)
+
+letter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" 
+       | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" 
+       | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" 
+       | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" 
+       | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" 
+       | "y" | "z" ;
+
+digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+integer = digit, { digit } ;
+
+(* === REGRAS DE USO DA EXTENSÃO === *)
+
+(* 
+   Para usar intervalos de caracteres:
+   1. Use hex-char para caracteres hexadecimais: #41
+   2. Use char-range para intervalos: #00 .. #FF  
+   3. Use char-set para conjuntos: { #30..39, #41..5A, #61..7A }
+   4. Use single-char para caracteres literais: 'A'
+
+   Não use a notação [a-z] ou [#00-#FF] pois isso conflitaria
+   com o significado original da EBNF.
+*)
+
+(* === EXEMPLO COMPLETO === *)
+
+(* Definindo identificadores com a extensão *)
+identifier = identifier-start, { identifier-part };
+identifier-start = { #41..5A, #61..7A, "_" };  (* A-Z, a-z, _ *)
+identifier-part = { #30..39, #41..5A, #61..7A, "_" };  (* 0-9, A-Z, a-z, _ *)
+
+(* Definindo números *)
+number = integer | float;
+integer = { #30..39 }, [ integer-suffix ];
+float = { #30..39 }, ".", { #30..39 }, [ exponent ], [ float-suffix ];
+exponent = ( "e" | "E" ), [ "+" | "-" ], { #30..39 };
+
+(* Strings com suporte a escape *)
+string = '"', { string-char }, '"';
+string-char = { #20..21, #23..5B, #5D..7E } | escape-sequence;
+escape-sequence = "\", ( "n" | "t" | "r" | "\" | '"' | "x", hex-digit, hex-digit );
+
+(* === COMPATIBILIDADE === *)
+
+(* 
+   Esta extensão é totalmente compatível com ISO EBNF padrão.
+   As adições não conflitam com construções existentes e podem
+   ser usadas de forma opcional.
+*)

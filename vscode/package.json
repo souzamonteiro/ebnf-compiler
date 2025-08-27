@@ -1,0 +1,30 @@
+{
+  "name": "ebnf-extended-syntax",
+  "displayName": "EBNF Extended Syntax",
+  "description": "Syntax highlighting for extended EBNF with directives and hex ranges",
+  "version": "1.0.0",
+  "publisher": "Roberto Luiz Souza Monteiro",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "ebnf-extended",
+      "aliases": ["EBNF Extended", "ebnf-extended"],
+      "extensions": [".ebnf", ".bnf"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "ebnf-extended",
+      "scopeName": "source.ebnf-extended",
+      "path": "./syntaxes/ebnf-extended.tmLanguage.json"
+    }]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/souzamonteiro/ebnf-extended-syntax.git"
+  }
+}

@@ -1,0 +1,19 @@
+name: Markdown Link Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * 6"
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Create .lycheeignore file
+        run: echo "/www.softwareag.com/" >> .lycheeignore
+
+      - name: Link Checker
+        id: lychee
+        uses: lycheeverse/lychee-action@v2

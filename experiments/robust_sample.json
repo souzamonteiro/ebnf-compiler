@@ -1,0 +1,391 @@
+{
+  "Grammar": [{
+      "Rule": {
+        "name": "program",
+        "expr": {
+          "Sequence": [{
+            "Terminal": "PROGRAM"
+          }, {
+            "Identifier": "identifier"
+          }, {
+            "Terminal": ";"
+          }, {
+            "Identifier": "block"
+          }, {
+            "Terminal": "."
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "block",
+        "expr": {
+          "Sequence": [{
+            "Repetition": {
+              "Identifier": "declaration"
+            }
+          }, {
+            "Terminal": "BEGIN"
+          }, {
+            "Repetition": {
+              "Sequence": [{
+                "Identifier": "statement"
+              }, {
+                "Terminal": ";"
+              }]
+            }
+          }, {
+            "Terminal": "END"
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "declaration",
+        "expr": {
+          "Sequence": [{
+            "Terminal": "VAR"
+          }, {
+            "Identifier": "identifier"
+          }, {
+            "Terminal": ":"
+          }, {
+            "Identifier": "type"
+          }, {
+            "Terminal": ";"
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "type",
+        "expr": {
+          "Choice": [{
+            "Terminal": "INTEGER"
+          }, {
+            "Terminal": "BOOLEAN"
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "statement",
+        "expr": {
+          "Choice": [{
+            "Identifier": "assignment"
+          }, {
+            "Identifier": "if_statement"
+          }, {
+            "Identifier": "while_statement"
+          }, {
+            "Identifier": "block"
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "assignment",
+        "expr": {
+          "Sequence": [{
+            "Identifier": "identifier"
+          }, {
+            "Terminal": ":="
+          }, {
+            "Identifier": "expression"
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "if_statement",
+        "expr": {
+          "Sequence": [{
+            "Terminal": "IF"
+          }, {
+            "Identifier": "expression"
+          }, {
+            "Terminal": "THEN"
+          }, {
+            "Identifier": "statement"
+          }, {
+            "Optional": {
+              "Sequence": [{
+                "Terminal": "ELSE"
+              }, {
+                "Identifier": "statement"
+              }]
+            }
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "while_statement",
+        "expr": {
+          "Sequence": [{
+            "Terminal": "WHILE"
+          }, {
+            "Identifier": "expression"
+          }, {
+            "Terminal": "DO"
+          }, {
+            "Identifier": "statement"
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "expression",
+        "expr": {
+          "Sequence": [{
+            "Identifier": "term"
+          }, {
+            "Repetition": {
+              "Sequence": [{
+                "Group": {
+                  "Choice": [{
+                    "Terminal": "+"
+                  }, {
+                    "Terminal": "-"
+                  }]
+                }
+              }, {
+                "Identifier": "term"
+              }]
+            }
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "term",
+        "expr": {
+          "Sequence": [{
+            "Identifier": "factor"
+          }, {
+            "Repetition": {
+              "Sequence": [{
+                "Group": {
+                  "Choice": [{
+                    "Terminal": "*"
+                  }, {
+                    "Terminal": "/"
+                  }]
+                }
+              }, {
+                "Identifier": "factor"
+              }]
+            }
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "factor",
+        "expr": {
+          "Choice": [{
+            "Identifier": "identifier"
+          }, {
+            "Identifier": "number"
+          }, {
+            "Terminal": "TRUE"
+          }, {
+            "Terminal": "FALSE"
+          }, {
+            "Sequence": [{
+              "Terminal": "("
+            }, {
+              "Identifier": "expression"
+            }, {
+              "Terminal": ")"
+            }]
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "identifier",
+        "expr": {
+          "Sequence": [{
+            "Identifier": "letter"
+          }, {
+            "Repetition": {
+              "Choice": [{
+                "Identifier": "letter"
+              }, {
+                "Identifier": "digit"
+              }, {
+                "Terminal": "_"
+              }]
+            }
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "number",
+        "expr": {
+          "Sequence": [{
+            "Identifier": "digit"
+          }, {
+            "Repetition": {
+              "Identifier": "digit"
+            }
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "letter",
+        "expr": {
+          "Choice": [{
+            "Terminal": "A"
+          }, {
+            "Terminal": "B"
+          }, {
+            "Terminal": "C"
+          }, {
+            "Terminal": "D"
+          }, {
+            "Terminal": "E"
+          }, {
+            "Terminal": "F"
+          }, {
+            "Terminal": "G"
+          }, {
+            "Terminal": "H"
+          }, {
+            "Terminal": "I"
+          }, {
+            "Terminal": "J"
+          }, {
+            "Terminal": "K"
+          }, {
+            "Terminal": "L"
+          }, {
+            "Terminal": "M"
+          }, {
+            "Terminal": "N"
+          }, {
+            "Terminal": "O"
+          }, {
+            "Terminal": "P"
+          }, {
+            "Terminal": "Q"
+          }, {
+            "Terminal": "R"
+          }, {
+            "Terminal": "S"
+          }, {
+            "Terminal": "T"
+          }, {
+            "Terminal": "U"
+          }, {
+            "Terminal": "V"
+          }, {
+            "Terminal": "W"
+          }, {
+            "Terminal": "X"
+          }, {
+            "Terminal": "Y"
+          }, {
+            "Terminal": "Z"
+          }, {
+            "Terminal": "a"
+          }, {
+            "Terminal": "b"
+          }, {
+            "Terminal": "c"
+          }, {
+            "Terminal": "d"
+          }, {
+            "Terminal": "e"
+          }, {
+            "Terminal": "f"
+          }, {
+            "Terminal": "g"
+          }, {
+            "Terminal": "h"
+          }, {
+            "Terminal": "i"
+          }, {
+            "Terminal": "j"
+          }, {
+            "Terminal": "k"
+          }, {
+            "Terminal": "l"
+          }, {
+            "Terminal": "m"
+          }, {
+            "Terminal": "n"
+          }, {
+            "Terminal": "o"
+          }, {
+            "Terminal": "p"
+          }, {
+            "Terminal": "q"
+          }, {
+            "Terminal": "r"
+          }, {
+            "Terminal": "s"
+          }, {
+            "Terminal": "t"
+          }, {
+            "Terminal": "u"
+          }, {
+            "Terminal": "v"
+          }, {
+            "Terminal": "w"
+          }, {
+            "Terminal": "x"
+          }, {
+            "Terminal": "y"
+          }, {
+            "Terminal": "z"
+          }]
+        }
+      }
+    },
+    {
+      "Rule": {
+        "name": "digit",
+        "expr": {
+          "Choice": [{
+            "Terminal": "0"
+          }, {
+            "Terminal": "1"
+          }, {
+            "Terminal": "2"
+          }, {
+            "Terminal": "3"
+          }, {
+            "Terminal": "4"
+          }, {
+            "Terminal": "5"
+          }, {
+            "Terminal": "6"
+          }, {
+            "Terminal": "7"
+          }, {
+            "Terminal": "8"
+          }, {
+            "Terminal": "9"
+          }]
+        }
+      }
+    }
+  ]
+}

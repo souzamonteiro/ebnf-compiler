@@ -1,0 +1,131 @@
+{
+  "scopeName": "source.ebnf-extended",
+  "name": "EBNF Extended",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#directives"
+    },
+    {
+      "include": "#rule-definitions"
+    },
+    {
+      "include": "#tokens"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.ebnf",
+          "begin": "\\(\\*",
+          "end": "\\*\\)"
+        },
+        {
+          "name": "comment.line.ebnf",
+          "match": "//.*"
+        }
+      ]
+    },
+    "directives": {
+      "patterns": [
+        {
+          "name": "keyword.control.directive.ebnf",
+          "match": "%(RULES|TOKENS)%"
+        }
+      ]
+    },
+    "rule-definitions": {
+      "patterns": [
+        {
+          "name": "meta.rule.ebnf",
+          "match": "([a-zA-Z_][a-zA-Z0-9_]*)(\\s*)(=)",
+          "captures": {
+            "1": {
+              "name": "entity.name.function.rule.ebnf"
+            },
+            "3": {
+              "name": "keyword.operator.assignment.ebnf"
+            }
+          }
+        }
+      ]
+    },
+    "tokens": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.ebnf",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.ebnf",
+              "match": "\\\\(\\\\|'|\"|n|t|r|b|f|u[0-9A-Fa-f]{4})"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.ebnf",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.ebnf",
+              "match": "\\\\(\\\\|'|\"|n|t|r|b|f|u[0-9A-Fa-f]{4})"
+            }
+          ]
+        },
+        {
+          "name": "constant.numeric.hex.ebnf",
+          "match": "#[0-9A-Fa-f]{2}"
+        },
+        {
+          "name": "keyword.operator.range.ebnf",
+          "match": "\\.\\."
+        },
+        {
+          "name": "keyword.operator.pipe.ebnf",
+          "match": "\\|"
+        },
+        {
+          "name": "keyword.operator.comma.ebnf",
+          "match": ","
+        },
+        {
+          "name": "keyword.operator.assignment.ebnf",
+          "match": "="
+        },
+        {
+          "name": "punctuation.terminator.ebnf",
+          "match": ";"
+        },
+        {
+          "name": "keyword.operator.quantifier.ebnf",
+          "match": "[*+?]"
+        },
+        {
+          "name": "punctuation.parenthesis.ebnf",
+          "match": "[()]"
+        },
+        {
+          "name": "punctuation.bracket.ebnf",
+          "match": "[\\[\\]]"
+        },
+        {
+          "name": "punctuation.brace.ebnf",
+          "match": "[{}]"
+        },
+        {
+          "name": "variable.other.identifier.ebnf",
+          "match": "[a-zA-Z_][a-zA-Z0-9_]*"
+        },
+        {
+          "name": "constant.numeric.integer.ebnf",
+          "match": "\\b\\d+\\b"
+        }
+      ]
+    }
+  }
+}

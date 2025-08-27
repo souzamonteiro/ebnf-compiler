@@ -1,0 +1,271 @@
+/*
+ * Gradle build file for RR - Railroad Diagram Generator.
+ */
+
+plugins {
+    id 'java'
+    id 'war'
+    id 'com.github.jk1.dependency-license-report' version '2.9'
+    id 'maven-publish'
+    id 'signing'
+}
+
+defaultTasks 'build'
+build.dependsOn 'distZip'
+
+version = '2.6-SNAPSHOT'
+group = 'de.bottlecaps.rr'
+
+def project_name = "$project.name"
+def buildTime = new Date()
+def aceVersion = '1.41.0'
+
+def generatedSrc = "$buildDir/generated-src/main"
+
+sourceSets {
+    main {
+        java {
+            srcDirs += ["$generatedSrc/java"]
+        }
+        resources {
+            srcDirs += ["$generatedSrc/resources"]
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    ace
+}
+
+dependencies {
+    ace "org.webjars.npm:ace-builds:$aceVersion"
+
+    compileOnly 'org.apache.tomcat:tomcat-servlet-api:8.5.100'
+
+    implementation 'net.sf.saxon:Saxon-HE:12.7'
+    implementation 'org.xmlresolver:xmlresolver:5.3.3'
+    implementation 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
+    implementation('org.apache.xmlgraphics:batik-all:1.19') {
+        exclude group: 'xml-apis', module: 'xml-apis'
+    }
+    implementation 'xml-apis:xml-apis-ext:1.3.04'
+    implementation 'org.apache.xmlgraphics:xmlgraphics-commons:2.11'
+}
+
+configurations {
+    runtimeClasspath {
+        transitive = false
+    }
+}
+
+jar {
+    manifest {
+        attributes (
+            'Implementation-Version': archiveVersion,
+            'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(buildTime)
+        )
+    }
+    rootSpec.exclude '**/de/bottlecaps/fatjar'
+    archiveFileName = "${project.name}.jar"
+}
+
+licenseReport {
+    outputDir = "$buildDir/LICENSE"
+    configurations = ['runtimeClasspath', 'ace']
+    renderers = [new com.github.jk1.license.render.TextReportRenderer()]
+}
+
+task generateSrc {
+    doFirst {
+        def aceBuilds = configurations.ace.find { it =~ /ace-builds/ }
+        def zip = new java.util.zip.ZipFile(aceBuilds)
+        ['ace.js', 'ext-searchbox.js'].each { script ->
+            def entry = zip.getEntry("META-INF/resources/webjars/ace-builds/$aceVersion/src-min-noconflict/$script")
+            def file = new File("$generatedSrc/resources/htdocs/$script")
+            file.parentFile.exists() || file.parentFile.mkdirs()
+            file.withWriter { it << zip.getInputStream(entry) }
+        }
+
+        def railroadVersion = new File("$generatedSrc/java/de/bottlecaps/railroad", 'RailroadVersion.java')
+        railroadVersion.parentFile.exists() || railroadVersion.parentFile.mkdirs()
+        railroadVersion.withWriter {
+            it << $/package de.bottlecaps.railroad;
+
+public class RailroadVersion
+{
+  public static final String PROJECT_NAME = "$project_name";
+  public static final String VERSION = "$version";
+  public static final String DATE = "${new java.text.SimpleDateFormat("MMM dd, yyyy", Locale.US).format(buildTime)}";
+}
+/$
+        }
+    }
+}
+
+compileJava {
+    dependsOn generateSrc
+    options.release = 11
+}
+
+javadoc {
+    include 'de/bottlecaps/railroad/RailroadGenerator.java'
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+task generateLicense {
+    doFirst {
+        def calendar = Calendar.getInstance()
+        calendar.setTime(buildTime)
+        def year = calendar.get(Calendar.YEAR)
+        def licenseTxt = new File("$buildDir", 'LICENSE.TXT')
+        licenseTxt.parentFile.exists() || licenseTxt.parentFile.mkdirs()
+        licenseTxt.withWriter {
+            it << $/RR - Railroad Diagram Generator
+
+Copyright 2010-$year Gunther Rademacher <grd@gmx.net>
+
+Licensed under the Apache 2.0 License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing
+permissions and limitations under the License.
+
+This distribution also includes
+
+      - Saxon-HE from Saxonica.com
+      - TagSoup
+      - Apache Batik
+      - Apache XML Graphics Commons
+      - Apache XML Commons XML APIs
+      - Ace Editor
+
+For their license information see THIRD-PARTY-NOTICES.txt.
+
+Thank you for choosing RR - Railroad Diagram Generator.
+/$
+        }
+    }
+}
+
+war {
+    dependsOn jar, generateLicense, generateLicenseReport
+    manifest {
+        attributes (
+            'Main-Class': 'de.bottlecaps.fatjar.Loader',
+            'FatJar-Main-Class': 'de.bottlecaps.railroad.Railroad',
+            'FatJar-Jars': 'WEB-INF/lib/' + jar.archiveFileName.get() + ' ' + configurations.runtimeClasspath.collect{'WEB-INF/lib/' + it.name}.join(' '),
+            'Implementation-Version': archiveVersion,
+            'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(buildTime)
+        )
+    }
+    into('de/bottlecaps/fatjar') {
+        from("$buildDir/classes/java/main/de/bottlecaps/fatjar")
+    }
+    into('LICENSE') {
+        from "$buildDir/LICENSE.txt"
+        from "$buildDir/LICENSE/THIRD-PARTY-NOTICES.txt"
+    }
+    classpath jar
+    rootSpec.exclude '**/de'
+    rootSpec.exclude '**/htdocs'
+    archiveFileName = "${project.name}.war"
+}
+
+task distZip(type:JavaExec) {
+    dependsOn war
+    mainClass = '-jar'
+    args "$buildDir/libs/rr.war", '-distZip'
+    workingDir = "$buildDir/distributions"
+
+    doFirst {
+      mkdir workingDir
+    }
+}
+
+ext.isReleaseVersion = !version.endsWith("-SNAPSHOT")
+
+void configureMetadata(MavenPublication mavenPublication) {
+    configure (mavenPublication) {
+        pom {
+            name = groupId + ':' + artifactId
+            description = 'Railroad diagram generator'
+            url = 'https://www.bottlecaps.de/rr/ui'
+            licenses {
+                license {
+                    name = 'Apache-2.0'
+                    url = 'https://opensource.org/licenses/Apache-2.0'
+                }
+            }
+            developers {
+                developer {
+                    name = 'Gunther Rademacher'
+                    email = 'grd@gmx.net'
+                    organization = 'Gunther Rademacher'
+                    organizationUrl = 'https://www.bottlecaps.de/'
+                }
+            }
+            scm {
+                connection = 'git@github.com:GuntherRademacher/rr.git'
+                developerConnection = 'git@github.com:GuntherRademacher/rr.git'
+                url = 'https://github.com/GuntherRademacher/rr'
+            }
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = 'local'
+            def releaseRepo = layout.buildDirectory.dir('repo/releases')
+            def snapshotRepo = layout.buildDirectory.dir('repo/snapshots')
+            url = isReleaseVersion ? releaseRepo : snapshotRepo
+        }
+    }
+
+    publications {
+        jar(MavenPublication) {
+            artifactId = 'rr-lib'
+            from components.java
+            configureMetadata delegate
+        }
+        war(MavenPublication) {
+            artifactId = 'rr-webapp'
+            from components.web
+            configureMetadata delegate
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign publishing.publications.jar
+    sign publishing.publications.war
+}
+
+tasks.withType(Sign) {
+    onlyIf { isReleaseVersion }
+}
+
+tasks.register('createBundle', Zip) {
+    dependsOn 'publishAllPublicationsToLocalRepository'
+    from publishing.repositories.local.url
+    archiveFileName = "${project.name}-${project.version}-bundle.zip"
+    destinationDirectory = layout.buildDirectory.dir('bundles')
+}
+
+publish.finalizedBy createBundle

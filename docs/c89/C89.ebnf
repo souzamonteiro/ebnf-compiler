@@ -1,0 +1,261 @@
+%RULES%
+
+translation_unit = { external_declaration }, EOF ;
+
+external_declaration = function_definition | declaration ;
+
+function_definition = declaration_specifiers, declarator, 
+                      { declaration }, compound_statement ;
+
+declaration = declaration_specifiers, [ init_declarator_list ], semicolon ;
+
+declaration_specifiers = { storage_class_specifier | type_qualifier }, 
+                         type_specifier, 
+                         { type_qualifier } ;
+
+storage_class_specifier = "typedef" | "extern" | "static" | "auto" | "register" ;
+
+type_specifier = "void" | "char" | "short" | "int" | "long" | "float" | "double" 
+               | "signed" | "unsigned" | struct_or_union_specifier | enum_specifier ;
+
+type_qualifier = "const" | "volatile" ;
+
+struct_or_union_specifier = struct_or_union, [ identifier ], 
+                            l_brace, struct_declaration_list, r_brace
+                          | struct_or_union, identifier ;
+
+struct_or_union = "struct" | "union" ;
+
+struct_declaration_list = struct_declaration, { struct_declaration } ;
+
+struct_declaration = specifier_qualifier_list, struct_declarator_list, semicolon ;
+
+specifier_qualifier_list = { type_specifier | type_qualifier }, 
+                           type_specifier, 
+                           { type_qualifier } ;
+
+struct_declarator_list = struct_declarator, { comma, struct_declarator } ;
+
+struct_declarator = declarator | [ declarator ], colon, constant_expression ;
+
+enum_specifier = "enum", [ identifier ], l_brace, enumerator_list, [ comma ], r_brace
+               | "enum", identifier ;
+
+enumerator_list = enumerator, { comma, enumerator } ;
+
+enumerator = identifier, [ equals, constant_expression ] ;
+
+init_declarator_list = init_declarator, { comma, init_declarator } ;
+
+init_declarator = declarator, [ equals, initializer ] ;
+
+declarator = [ pointer ], direct_declarator ;
+
+pointer = asterisk, { type_qualifier }, [ pointer ] ;
+
+direct_declarator = identifier
+                  | l_paren, declarator, r_paren
+                  | direct_declarator, l_bracket, [ constant_expression ], r_bracket
+                  | direct_declarator, l_paren, [ parameter_type_list ], r_paren ;
+
+parameter_type_list = parameter_list, [ comma, ellipsis ] ;
+
+parameter_list = parameter_declaration, { comma, parameter_declaration } ;
+
+parameter_declaration = declaration_specifiers, declarator 
+                      | declaration_specifiers, [ abstract_declarator ] ;
+
+type_name = specifier_qualifier_list, [ abstract_declarator ] ;
+
+abstract_declarator = pointer
+                    | [ pointer ], direct_abstract_declarator ;
+
+direct_abstract_declarator = [ direct_abstract_declarator ], l_paren, [ parameter_type_list ], r_paren
+                           | [ direct_abstract_declarator ], l_bracket, [ constant_expression ], r_bracket
+                           | l_paren, abstract_declarator, r_paren ;
+
+initializer = assignment_expression
+            | l_brace, initializer_list, [ comma ], r_brace ;
+
+initializer_list = designation, initializer, { comma, designation, initializer } 
+                 | initializer, { comma, initializer } ;
+
+designation = designator_list, equals ;
+
+designator_list = designator, { designator } ;
+
+designator = l_bracket, constant_expression, r_bracket
+           | dot, identifier ;
+
+statement = labeled_statement
+          | compound_statement
+          | expression_statement
+          | selection_statement
+          | iteration_statement
+          | jump_statement ;
+
+labeled_statement = identifier, colon, statement
+                  | "case", constant_expression, colon, statement
+                  | "default", colon, statement ;
+
+compound_statement = l_brace, { block_item }, r_brace ;
+
+block_item = declaration | statement ;
+
+expression_statement = [ expression ], semicolon ;
+
+selection_statement = "if", l_paren, expression, r_paren, statement, 
+                      [ "else", statement ]
+                    | "switch", l_paren, expression, r_paren, statement ;
+
+iteration_statement = "while", l_paren, expression, r_paren, statement
+                    | "do", statement, "while", l_paren, expression, r_paren, semicolon
+                    | "for", l_paren, [ expression ], semicolon, 
+                             [ expression ], semicolon, 
+                             [ expression ], r_paren, statement ;
+
+jump_statement = "goto", identifier, semicolon
+               | "continue", semicolon
+               | "break", semicolon
+               | "return", [ expression ], semicolon ;
+
+expression = assignment_expression, { comma, assignment_expression } ;
+
+assignment_expression = conditional_expression,
+                        [ assignment_operator, assignment_expression ] ;
+
+assignment_operator = equals | times_equals | divide_equals | mod_equals 
+                    | plus_equals | minus_equals | shift_left_equals 
+                    | shift_right_equals | and_equals | xor_equals | or_equals ;
+
+conditional_expression = logical_or_expression,
+                         [ question, expression, colon, conditional_expression ] ;
+
+constant_expression = conditional_expression ;
+
+logical_or_expression = logical_and_expression,
+                        { or_or, logical_and_expression } ;
+
+logical_and_expression = inclusive_or_expression,
+                         { and_and, inclusive_or_expression } ;
+
+inclusive_or_expression = exclusive_or_expression,
+                          { or, exclusive_or_expression } ;
+
+exclusive_or_expression = and_expression,
+                          { xor, and_expression } ;
+
+and_expression = equality_expression,
+                 { and, equality_expression } ;
+
+equality_expression = relational_expression,
+                      { equals_equals | not_equals, relational_expression } ;
+
+relational_expression = shift_expression,
+                        { less | greater | less_equals | greater_equals, shift_expression } ;
+
+shift_expression = additive_expression,
+                   { shift_left | shift_right, additive_expression } ;
+
+additive_expression = multiplicative_expression,
+                      { plus | minus, multiplicative_expression } ;
+
+multiplicative_expression = cast_expression,
+                            { asterisk | divide | mod, cast_expression } ;
+
+cast_expression = unary_expression 
+                | l_paren, type_name, r_paren, cast_expression ;
+
+unary_expression = postfix_expression
+                 | plus_plus, unary_expression
+                 | minus_minus, unary_expression
+                 | unary_operator, cast_expression
+                 | "sizeof", unary_expression
+                 | "sizeof", l_paren, type_name, r_paren ;
+
+unary_operator = and | asterisk | plus | minus | tilde | not ;
+
+postfix_expression = primary_expression,
+                     { l_bracket, expression, r_bracket
+                     | l_paren, [ argument_expression_list ], r_paren
+                     | dot, identifier
+                     | arrow, identifier
+                     | plus_plus
+                     | minus_minus } ;
+
+primary_expression = identifier
+                   | constant
+                   | string_literal
+                   | l_paren, expression, r_paren ;
+
+argument_expression_list = assignment_expression, 
+                           { comma, assignment_expression } ;
+
+constant = integer_constant | float_constant | character_constant | enumeration_constant ;
+
+%TOKENS%
+
+equals     = "=" ;
+semicolon  = ";" ;
+comma      = "," ;
+asterisk   = "*" ;
+plus       = "+" ;
+minus      = "-" ;
+divide     = "/" ;
+mod        = "%" ;
+and        = "&" ;
+or         = "|" ;
+xor        = "^" ;
+not        = "!" ;
+tilde      = "~" ;
+less       = "<" ;
+greater    = ">" ;
+dot        = "." ;
+l_paren    = "(" ;
+r_paren    = ")" ;
+l_bracket  = "[" ;
+r_bracket  = "]" ;
+l_brace    = "{" ;
+r_brace    = "}" ;
+question   = "?" ;
+colon      = ":" ;
+
+equals_equals = "==" ;
+not_equals = "!=" ;
+less_equals = "<=" ;
+greater_equals = ">=" ;
+and_and = "&&" ;
+or_or = "||" ;
+plus_equals = "+=" ;
+minus_equals = "-=" ;
+times_equals = "*=" ;
+divide_equals = "/=" ;
+mod_equals = "%=" ;
+and_equals = "&=" ;
+or_equals = "|=" ;
+xor_equals = "^=" ;
+shift_left_equals = "<<=" ;
+shift_right_equals = ">>=" ;
+plus_plus = "++" ;
+minus_minus = "--" ;
+shift_left = "<<" ;
+shift_right = ">>" ;
+arrow = "->" ;
+ellipsis = "..." ;
+
+identifier = ( letter | "_" ), { letter | digit | "_" } ;
+enumeration_constant = identifier ;
+integer_constant = digit, { digit } ;
+float_constant = digit, { digit }, dot, digit, { digit }, 
+                 [ ( "e" | "E" ), [ plus | minus ], digit, { digit } ] ;
+character_constant = "'", ( escape_sequence | character - "'" | "\\'" ), "'" ;
+string_literal = '"', { string_char }, '"' ;
+string_char = character - ( '"' | "\\" ) | escape_sequence ;
+escape_sequence = "\\", ( "\\" | "'" | '"' | "n" | "t" | "r" | "b" | "f" ) ;
+letter = "A" .. "Z" | "a" .. "z" ;
+digit = "0" .. "9" ;
+
+spaces = space, { space } ;
+space = #20 | #09 | #0A | #0D ;
+
+EOF = ? end of file ? ;

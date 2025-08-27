@@ -1,0 +1,59 @@
+(*-- GRAMMAR --*)
+
+syntax     = { rule | comment } ;
+
+rule       = identifier, "=", expression, ";" ;
+
+expression = term, { "|", term } ;
+
+term       = factor, { ",", factor } ;
+
+factor     = [ integer, "*" ], primary ;
+
+primary    = identifier
+           | terminal
+           | optional
+           | repeat
+           | group
+           | special_sequence ;
+
+optional   = "[", expression, "]" ;
+repeat     = "{", expression, "}" ;
+group      = "(", expression, ")" ;
+special_sequence = "?", { character - "?" }, "?" ;
+
+identifier = (letter | "_"), { letter | digit | "_" } ;
+
+terminal   = '"', { string_char }, '"'
+           | "'", { string_char }, "'" ;
+string_char = character - ('"' | "'") | escape_sequence ;
+escape_sequence = "\", ( "\" | "'" | '"' | "n" | "t" | "r" ) ;
+
+comment    = "(*", { comment_char }, "*)" ;
+comment_char = character - "*" | "*", character - ")" ;
+
+(*-- TOKENS --*)
+
+character  = ascii ;
+ascii      = #00 .. #7F ;
+
+integer    = digit, { digit } ;
+
+letter     = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+           | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+           | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+           | "V" | "W" | "X" | "Y" | "Z"
+           | "a" | "b" | "c" | "d" | "e" | "f" | "g"
+           | "h" | "i" | "j" | "k" | "l" | "m" | "n"
+           | "o" | "p" | "q" | "r" | "s" | "t" | "u"
+           | "v" | "w" | "x" | "y" | "z" ;
+
+digit      = "0" | "1" | "2" | "3" | "4"
+           | "5" | "6" | "7" | "8" | "9" ;
+
+hex_char   = "#", hex_digit, hex_digit ;
+char_range = hex_char, "..", hex_char ;
+hex_digit  = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" 
+           | "A" | "B" | "C" | "D" | "E" | "F" | "a" | "b" | "c" | "d" | "e" | "f" ;
+
+space      = #20 | #09 | #0A | #0D ;
