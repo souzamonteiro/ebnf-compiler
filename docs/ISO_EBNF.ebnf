@@ -1,97 +1,67 @@
-%RULES%
+syntax         = { rule | directive | comment | space } ;
 
-syntax = { (rule | comment | directive | space) } ;
+rule           = identifier, "=", expression, ";" ;
 
-rule = identifier, spaces, equals, spaces, expression, spaces, semicolon ;
+expression     = term, { "|", term } ;
+term           = factor, { factor } ;
+factor         = primary, [ repetition ] ;
 
-(* Precedence levels (lowest to highest). *)
-expression = exception, { spaces, pipe, spaces, exception } ;
-exception  = concatenation, [ spaces, minus, spaces, exception ] ;
-concatenation = term, { spaces, comma, spaces, term } ;
-term       = factor, { factor } ; /* Concatenação implícita */
-factor = [ repetition ], primary ;
-repetition = integer, asterisk | quantifier ;
+repetition     = "*" 
+               | "+" 
+               | "?" 
+               | "{", integer, [ ",", [ integer ] ], "}" ;
 
-quantifier = asterisk 
-           | plus 
-           | question 
-           | l_brace, spaces, integer, [ comma, spaces, [ integer ] ], spaces, r_brace ;
+primary        = identifier
+               | terminal
+               | optional
+               | repeated
+               | group
+               | special_sequence
+               | char_range ;
 
-primary = identifier
-        | terminal
-        | optional
-        | repeated
-        | group
-        | special_sequence
-        | char_range
-        | hex_char ;
+optional       = "[", expression, "]" ;
+repeated       = "{", expression, "}" ;
+group          = "(", expression, ")" ;
 
-optional = l_bracket, spaces, expression, spaces, r_bracket ;
-repeated = l_brace, spaces, expression, spaces, r_brace ;
-group    = l_paren, spaces, expression, spaces, r_paren ;
+special_sequence = "?", { character - "?" }, "?" ;
 
-special_sequence = question, { character - question }, question ;
-
-character_set = character_element, { spaces, minus, spaces, character_element } ;
-character_element = character | question ;
-
-directive = percent, identifier, [ l_paren, literal, r_paren ], percent ;
+directive      = "%", identifier, [ "(", literal, ")" ], "%" ;
 
 %TOKENS%
 
-whitespace = space ;
+literal        = string | identifier | integer | hex_char ;
 
-equals     = #3D ;
-semicolon  = #3B ;
-pipe       = #7C ;
-comma      = #2C ;
-asterisk   = #2A ;
-plus       = #2B ;
-question   = #3F ;
-minus      = #2D ;
-l_bracket  = #5B ;
-r_bracket  = #5D ;
-l_brace    = #7B ;
-r_brace    = #7D ;
-l_paren    = #28 ;
-r_paren    = #29 ;
-dot_dot    = #2E, #2E ;
-hash       = #23 ;
-percent    = #25 ;
+terminal       = string | hex_char ;
 
-literal = string | identifier | integer | hex_char ;
+string         = '"', { string_char }, '"' 
+               | "'", { string_char }, "'" ;
 
-identifier = (letter | underscore), { letter | digit | underscore } ;
-underscore = #5F ;
+string_char    = escape_sequence 
+               | character - ('"' | "'" | "\\" ) ;
 
-terminal = #22, { string_char }, #22 
-         | #27, { string_char }, #27 ;
+escape_sequence = "\\", (
+                   '"'  | "'"  | "\\" | "n" | "r" | "t"
+                 | "u", hex_digit, hex_digit, hex_digit, hex_digit
+                 ) ;
 
-string_char = character - (#22 | #27) 
-            | escape_sequence
-            | unicode_escape ;
+char_range     = hex_char, "..", hex_char ;
 
-escape_sequence = #5C, ( #5C | #27 | #22 | #6E | #74 | #72 | #62 | #66 ) ;
-unicode_escape  = #5C, #75, hex_digit, hex_digit, hex_digit, hex_digit ;
+identifier     = letter, { letter | digit | "_" } ;
 
-comment       = block_comment | line_comment ;
-block_comment = #28, #2A, { comment_char | block_comment }, #2A, #29 ;
-line_comment  = #2F, #2F, { character - (#0A | #0D) }, ( #0A | #0D ) ;
+integer        = digit, { digit } ;
 
-comment_char  = character - #2A | #2A, character - #29 ;
+hex_char       = "#", hex_digit, hex_digit, hex_digit, hex_digit ;
 
-character = ascii | unicode ;
-ascii     = #00 .. #7F ;
-unicode   = #80 .. #FF
-          | #0100 .. #FFFF
-          | #010000 .. #10FFFF ;
+comment        = block_comment | line_comment ;
+block_comment  = "(*", { character - "*" | "*", character - ")" }, "*)" ;
+line_comment   = "//", { character - ("\n" | "\r") }, ( "\n" | "\r" ) ;
 
-integer = digit, { digit } ;
-letter  = #41 .. #5A | #61 .. #7A ;
-digit   = #30 .. #39 ;
-hex_char = hash, hex_digit, hex_digit ;
-char_range = hex_char, spaces, dot_dot, spaces, hex_char ;
-hex_digit  = digit | #41 .. #46 | #61 .. #66 ;
+character      = unicode ;
 
-spaces = space, { space } ;
-space  = #20 | #09 | #0A | #0D ;
+unicode        = "#0000" .. "#FFFF" ;
+
+letter         = "A".."Z" | "a".."z" ;
+digit          = "0".."9" ;
+hex_digit      = digit | "A".."F" | "a".."f" ;
+
+space          = " " | "\t" | "\n" | "\r" ;
