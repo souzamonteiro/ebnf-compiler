@@ -1,7 +1,14 @@
-// Teste adicional
-arithmetic = expression ;
-expression = term ( ("+" | "-") term )* ;
-term = factor ( ("*" | "/") factor )* ;
-factor = number | "(" expression ")" | ("+" | "-") factor ;
-number = digit+ ;
-digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+(* Test syntax *)
+syntax = { rule | directive | comment | space } ;
+
+rule = meta-identifier , defining-symbol , definitions-list , terminator-symbol ;
+
+%TOKENS%
+
+defining-symbol = '=' ;
+terminator-symbol = ';' ;
+
+%RULES%
+
+meta-identifier = letter , { meta-identifier-character } ;
+letter = #41..#5A | #61..#7A ;

@@ -59,23 +59,22 @@ extern int yydebug;
     INTEGER = 260,                 /* INTEGER  */
     HEX_CHAR = 261,                /* HEX_CHAR  */
     CHARACTER = 262,               /* CHARACTER  */
-    SPECIAL_SEQUENCE = 263,        /* SPECIAL_SEQUENCE  */
-    EQUALS = 264,                  /* EQUALS  */
-    PIPE = 265,                    /* PIPE  */
-    SEMICOLON = 266,               /* SEMICOLON  */
-    STAR = 267,                    /* STAR  */
-    PLUS = 268,                    /* PLUS  */
-    QUESTION = 269,                /* QUESTION  */
-    LBRACKET = 270,                /* LBRACKET  */
-    RBRACKET = 271,                /* RBRACKET  */
-    LBRACE = 272,                  /* LBRACE  */
-    RBRACE = 273,                  /* RBRACE  */
-    LPAREN = 274,                  /* LPAREN  */
-    RPAREN = 275,                  /* RPAREN  */
-    RANGE = 276,                   /* RANGE  */
-    PERCENT = 277,                 /* PERCENT  */
-    COMMA = 278,                   /* COMMA  */
-    HASH = 279                     /* HASH  */
+    EQUALS = 263,                  /* EQUALS  */
+    PIPE = 264,                    /* PIPE  */
+    SEMICOLON = 265,               /* SEMICOLON  */
+    STAR = 266,                    /* STAR  */
+    MINUS = 267,                   /* MINUS  */
+    RANGE = 268,                   /* RANGE  */
+    HASH = 269,                    /* HASH  */
+    PERCENT = 270,                 /* PERCENT  */
+    QUESTION = 271,                /* QUESTION  */
+    LBRACKET = 272,                /* LBRACKET  */
+    RBRACKET = 273,                /* RBRACKET  */
+    LBRACE = 274,                  /* LBRACE  */
+    RBRACE = 275,                  /* RBRACE  */
+    LPAREN = 276,                  /* LPAREN  */
+    RPAREN = 277,                  /* RPAREN  */
+    COMMA = 278                    /* COMMA  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -89,7 +88,7 @@ union YYSTYPE
     char* str;
     ASTNode* node;
 
-#line 93 "parser.tab.h"
+#line 92 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

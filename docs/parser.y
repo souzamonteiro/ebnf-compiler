@@ -17,120 +17,127 @@ ASTNode* root;
     ASTNode* node;
 }
 
-%token <str> IDENTIFIER STRING INTEGER HEX_CHAR CHARACTER SPECIAL_SEQUENCE
-%token EQUALS PIPE SEMICOLON STAR PLUS QUESTION
-%token LBRACKET RBRACKET LBRACE RBRACE LPAREN RPAREN
-%token RANGE PERCENT COMMA HASH
+%token <str> IDENTIFIER STRING INTEGER HEX_CHAR CHARACTER
+%token EQUALS PIPE SEMICOLON STAR MINUS RANGE HASH PERCENT QUESTION
+%token LBRACKET RBRACKET LBRACE RBRACE LPAREN RPAREN COMMA
 
-%type <node> syntax rule_list rule expression term factor primary
-%type <node> repetition optional repeated group special_sequence
-%type <node> char_range
+%type <node> syntax syntax_rules rule directive definitions_list single_definition
+%type <node> syntactic_term syntactic_factor syntactic_primary
+%type <node> optional_sequence repeated_sequence grouped_sequence
+%type <node> meta_identifier integer terminal_string special_sequence empty_sequence
+%type <node> char_range hex_char
 
 %%
 
 syntax
-    : rule_list { root = $1; }
+    : syntax_rules { root = $1; }
     ;
 
-rule_list
-    : rule { $$ = $1; }
-    | rule_list rule { 
-        $$ = create_node(NODE_EXPRESSION, "rule_list");
-        add_child($$, $1);
-        add_child($$, $2);
-      }
+syntax_rules
+    : /* empty */ { $$ = create_node(NODE_SYNTAX, NULL); }
+    | syntax_rules rule { add_child($1, $2); $$ = $1; }
+    | syntax_rules directive { add_child($1, $2); $$ = $1; }
     ;
 
 rule
-    : IDENTIFIER EQUALS expression SEMICOLON {
+    : meta_identifier EQUALS definitions_list SEMICOLON {
         $$ = create_node(NODE_RULE, $1);
         add_child($$, $3);
         free($1);
       }
     ;
 
-expression
-    : term { $$ = $1; }
-    | expression PIPE term {
-        $$ = create_node(NODE_EXPRESSION, "|");
+directive
+    : PERCENT IDENTIFIER PERCENT {
+        $$ = create_node(NODE_DIRECTIVE, $2);
+        free($2);
+      }
+    | PERCENT IDENTIFIER grouped_sequence PERCENT {
+        $$ = create_node(NODE_DIRECTIVE, $2);
+        add_child($$, $3);
+        free($2);
+      }
+    ;
+
+definitions_list
+    : single_definition { $$ = $1; }
+    | definitions_list PIPE single_definition {
+        $$ = create_node(NODE_ALTERNATIVE, "|");
         add_child($$, $1);
         add_child($$, $3);
       }
     ;
 
-term
-    : factor { $$ = $1; }
-    | term factor {
-        $$ = create_node(NODE_TERM, "concatenation");
+single_definition
+    : syntactic_term { $$ = $1; }
+    | single_definition COMMA syntactic_term {
+        $$ = create_node(NODE_CONCATENATION, ",");
         add_child($$, $1);
-        add_child($$, $2);
+        add_child($$, $3);
       }
     ;
 
-factor
-    : primary repetition {
-        $$ = create_node(NODE_FACTOR, NULL);
+syntactic_term
+    : syntactic_factor { $$ = $1; }
+    | syntactic_factor MINUS syntactic_factor {
+        $$ = create_node(NODE_SYNTACTIC_TERM, "-");
         add_child($$, $1);
-        add_child($$, $2);
-      }
-    | primary {
-        $$ = create_node(NODE_FACTOR, NULL);
-        add_child($$, $1);
+        add_child($$, $3);
       }
     ;
 
-repetition
-    : STAR { $$ = create_node(NODE_REPETITION, "*"); }
-    | PLUS { $$ = create_node(NODE_REPETITION, "+"); }
-    | QUESTION { $$ = create_node(NODE_REPETITION, "?"); }
-    | LBRACE INTEGER COMMA INTEGER RBRACE {
-        $$ = create_node(NODE_REPETITION, "range");
-        add_child($$, create_node(NODE_INTEGER, $2));
-        add_child($$, create_node(NODE_INTEGER, $4));
-        free($2); free($4);
-      }
-    | LBRACE INTEGER COMMA RBRACE {
-        $$ = create_node(NODE_REPETITION, "range_min");
-        add_child($$, create_node(NODE_INTEGER, $2));
-        free($2);
-      }
-    | LBRACE INTEGER RBRACE {
-        $$ = create_node(NODE_REPETITION, "exact");
-        add_child($$, create_node(NODE_INTEGER, $2));
-        free($2);
+syntactic_factor
+    : syntactic_primary { $$ = $1; }
+    | integer STAR syntactic_primary {
+        $$ = create_node(NODE_SYNTACTIC_FACTOR, "*");
+        add_child($$, create_node(NODE_INTEGER, $1));
+        add_child($$, $3);
+        free($1);
       }
     ;
 
-primary
-    : IDENTIFIER { $$ = create_node(NODE_IDENTIFIER, $1); free($1); }
-    | STRING { $$ = create_node(NODE_TERMINAL, $1); free($1); }
-    | HEX_CHAR { $$ = create_node(NODE_HEX_CHAR, $1); free($1); }
-    | optional { $$ = $1; }
-    | repeated { $$ = $1; }
-    | group { $$ = $1; }
+syntactic_primary
+    : optional_sequence { $$ = $1; }
+    | repeated_sequence { $$ = $1; }
+    | grouped_sequence { $$ = $1; }
+    | meta_identifier { $$ = $1; }
+    | terminal_string { $$ = $1; }
     | special_sequence { $$ = $1; }
+    | empty_sequence { $$ = $1; }
     | char_range { $$ = $1; }
     ;
 
-optional
-    : LBRACKET expression RBRACKET {
-        $$ = create_node(NODE_OPTIONAL, NULL);
+optional_sequence
+    : LBRACKET definitions_list RBRACKET {
+        $$ = create_node(NODE_OPTIONAL_SEQUENCE, NULL);
         add_child($$, $2);
       }
     ;
 
-repeated
-    : LBRACE expression RBRACE {
-        $$ = create_node(NODE_REPEATED, NULL);
+repeated_sequence
+    : LBRACE definitions_list RBRACE {
+        $$ = create_node(NODE_REPEATED_SEQUENCE, NULL);
         add_child($$, $2);
       }
     ;
 
-group
-    : LPAREN expression RPAREN {
-        $$ = create_node(NODE_GROUP, NULL);
+grouped_sequence
+    : LPAREN definitions_list RPAREN {
+        $$ = create_node(NODE_GROUPED_SEQUENCE, NULL);
         add_child($$, $2);
       }
+    ;
+
+meta_identifier
+    : IDENTIFIER { $$ = create_node(NODE_META_IDENTIFIER, $1); free($1); }
+    ;
+
+integer
+    : INTEGER { $$ = create_node(NODE_INTEGER, $1); free($1); }
+    ;
+
+terminal_string
+    : STRING { $$ = create_node(NODE_TERMINAL_STRING, $1); free($1); }
     ;
 
 special_sequence
@@ -138,13 +145,10 @@ special_sequence
         $$ = create_node(NODE_SPECIAL_SEQUENCE, $2);
         free($2);
       }
-    | QUESTION CHARACTER CHARACTER QUESTION {
-        char* combined = malloc(strlen($2) + strlen($3) + 1);
-        strcpy(combined, $2);
-        strcat(combined, $3);
-        $$ = create_node(NODE_SPECIAL_SEQUENCE, combined);
-        free($2); free($3);
-      }
+    ;
+
+empty_sequence
+    : { $$ = create_node(NODE_EMPTY_SEQUENCE, ""); }
     ;
 
 char_range
@@ -154,6 +158,10 @@ char_range
         add_child($$, create_node(NODE_HEX_CHAR, $3));
         free($1); free($3);
       }
+    ;
+
+hex_char
+    : HEX_CHAR { $$ = create_node(NODE_HEX_CHAR, $1); free($1); }
     ;
 
 %%
