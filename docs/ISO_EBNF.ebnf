@@ -1,7 +1,9 @@
 (* ============== MAIN SYNTAX ============== *)
-syntax = syntax-rule, { syntax-rule } ;
+syntax = { rule | directive | comment | space } ;
 
-syntax-rule = meta-identifier, defining-symbol, definitions-list, terminator-symbol ;
+rule = meta-identifier, defining-symbol, definitions-list, terminator-symbol ;
+
+directive = directive-symbol, meta-identifier, [ group ], directive-symbol ;
 
 definitions-list = single-definition, { definition-separator-symbol, single-definition } ;
 
@@ -26,6 +28,8 @@ optional-sequence = start-option-symbol, definitions-list, end-option-symbol ;
 repeated-sequence = start-repeat-symbol, definitions-list, end-repeat-symbol ;
 
 grouped-sequence = start-group-symbol, definitions-list, end-group-symbol ;
+
+%TOKENS%
 
 (* ============== BASIC ELEMENTS ============== *)
 meta-identifier = letter, { meta-identifier-character } ;
@@ -54,6 +58,7 @@ except-symbol = '-' ;
 repetition-symbol = '*' ;
 range-symbol = '..' ;
 hex-prefix = '#' ;
+directive-symbol = '%' ;
 first-quote-symbol = "'" ;
 second-quote-symbol = '"' ;
 special-sequence-symbol = '?' ;
@@ -88,6 +93,8 @@ special-sequence-character = terminal-character - special-sequence-symbol ;
 
 terminal-character = #0000 .. #ffff ;
 
-(* ============== COMMENTS (ignored) ============== *)
-comment = start-comment-symbol, { comment-symbol }, end-comment-symbol ;
-comment-symbol = terminal-character - end-comment-symbol ;
+(* ============== COMMENTS AND WHITESPACE (ignored) ============== *)
+comment = block-comment | line-comment ;
+block-comment = start-comment-symbol, { character - '*' | '*', character - ')' }, end-comment-symbol ;
+line-comment = '//', { character - ( '\n' | '\r' ) }, ( '\n' | '\r' ) ;
+space = ' ' | '\t' | '\n' | '\r' ;
