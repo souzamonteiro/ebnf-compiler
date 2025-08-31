@@ -75,8 +75,7 @@ extern int yydebug;
     LPAREN = 276,                  /* LPAREN  */
     RPAREN = 277,                  /* RPAREN  */
     COMMA = 278,                   /* COMMA  */
-    TOKENS_DIRECTIVE = 279,        /* TOKENS_DIRECTIVE  */
-    RULES_DIRECTIVE = 280          /* RULES_DIRECTIVE  */
+    TOKENS_DIRECTIVE = 279         /* TOKENS_DIRECTIVE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -85,12 +84,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 17 "parser.y"
+#line 16 "parser.y"
 
     char* str;
     ASTNode* node;
 
-#line 94 "parser.tab.h"
+#line 93 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

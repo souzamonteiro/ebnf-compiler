@@ -10,7 +10,6 @@ int yylex(void);
 
 ASTNode* root;
 int in_tokens_section = 0;
-int in_rules_section = 0;
 
 %}
 
@@ -22,13 +21,14 @@ int in_rules_section = 0;
 %token <str> IDENTIFIER STRING INTEGER HEX_CHAR CHARACTER
 %token EQUALS PIPE SEMICOLON STAR MINUS RANGE HASH PERCENT QUESTION
 %token LBRACKET RBRACKET LBRACE RBRACE LPAREN RPAREN COMMA
-%token TOKENS_DIRECTIVE RULES_DIRECTIVE
+%token TOKENS_DIRECTIVE
 
 %type <node> syntax syntax_rules rule directive definitions_list single_definition
 %type <node> syntactic_term syntactic_factor syntactic_primary
 %type <node> optional_sequence repeated_sequence grouped_sequence
 %type <node> meta_identifier integer terminal_string special_sequence empty_sequence
 %type <node> char_range hex_char
+%type <node> token_definitions
 
 %%
 
@@ -39,28 +39,44 @@ syntax
 syntax_rules
     : /* empty */ { $$ = create_node(NODE_SYNTAX, NULL); }
     | syntax_rules rule { 
-        if (in_rules_section) add_child($1, $2);
-        else yyerror("Rules outside RULES section");
-        $$ = $1; 
+        if (!in_tokens_section) {
+            add_child($1, $2);
+            $$ = $1;
+        } else {
+            // Na seção de tokens, trata como definição de token
+            ASTNode* token_rule = create_node(NODE_RULE, "token");
+            add_child(token_rule, $2);
+            add_child($1, token_rule);
+            $$ = $1;
+        }
       }
     | syntax_rules directive { 
-        add_child($1, $2);
-        $$ = $1; 
+        if (!in_tokens_section) {
+            add_child($1, $2);
+            $$ = $1;
+        } else {
+            // Ignora diretivas na seção de tokens
+            $$ = $1;
+        }
       }
     | syntax_rules TOKENS_DIRECTIVE { 
         in_tokens_section = 1;
-        in_rules_section = 0;
-        $$ = $1; 
-      }
-    | syntax_rules RULES_DIRECTIVE { 
-        in_tokens_section = 0;
-        in_rules_section = 1;
+        // Adiciona um marcador na AST para a seção de tokens
+        ASTNode* tokens_section = create_node(NODE_DIRECTIVE, "TOKENS_SECTION");
+        add_child($1, tokens_section);
         $$ = $1; 
       }
     | syntax_rules definitions_list {
-        if (in_tokens_section) add_child($1, $2);
-        else yyerror("Tokens outside TOKENS section");
-        $$ = $1;
+        if (in_tokens_section) {
+            // Trata como definição de token na seção de tokens
+            ASTNode* token_def = create_node(NODE_RULE, "token_def");
+            add_child(token_def, $2);
+            add_child($1, token_def);
+            $$ = $1;
+        } else {
+            yyerror("Definitions list outside proper context");
+            $$ = $1;
+        }
       }
     ;
 
@@ -206,7 +222,6 @@ int main(int argc, char *argv[]) {
     }
     
     in_tokens_section = 0;
-    in_rules_section = 1; // Start in rules section by default
     
     yyparse();
     

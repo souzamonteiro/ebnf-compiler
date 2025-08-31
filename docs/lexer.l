@@ -25,7 +25,6 @@ extern FILE *yyin;
 "(*"([^*]|"*"[^)])*"*)" { /* ignore block comments */ }
 
 "%TOKENS%"    { return TOKENS_DIRECTIVE; }
-"%RULES%"     { return RULES_DIRECTIVE; }
 
 "="           { return EQUALS; }
 "|"           { return PIPE; }
@@ -69,7 +68,7 @@ extern FILE *yyin;
     return INTEGER; 
 }
 
-[a-zA-Z][a-zA-Z0-9_]* {
+[a-zA-Z_][a-zA-Z0-9_]* {
     yylval.str = strdup(yytext);
     return IDENTIFIER;
 }
