@@ -9,6 +9,8 @@ void yyerror(const char *s);
 int yylex(void);
 
 ASTNode* root;
+int in_tokens_section = 0;
+int in_rules_section = 0;
 
 %}
 
@@ -20,6 +22,7 @@ ASTNode* root;
 %token <str> IDENTIFIER STRING INTEGER HEX_CHAR CHARACTER
 %token EQUALS PIPE SEMICOLON STAR MINUS RANGE HASH PERCENT QUESTION
 %token LBRACKET RBRACKET LBRACE RBRACE LPAREN RPAREN COMMA
+%token TOKENS_DIRECTIVE RULES_DIRECTIVE
 
 %type <node> syntax syntax_rules rule directive definitions_list single_definition
 %type <node> syntactic_term syntactic_factor syntactic_primary
@@ -35,8 +38,30 @@ syntax
 
 syntax_rules
     : /* empty */ { $$ = create_node(NODE_SYNTAX, NULL); }
-    | syntax_rules rule { add_child($1, $2); $$ = $1; }
-    | syntax_rules directive { add_child($1, $2); $$ = $1; }
+    | syntax_rules rule { 
+        if (in_rules_section) add_child($1, $2);
+        else yyerror("Rules outside RULES section");
+        $$ = $1; 
+      }
+    | syntax_rules directive { 
+        add_child($1, $2);
+        $$ = $1; 
+      }
+    | syntax_rules TOKENS_DIRECTIVE { 
+        in_tokens_section = 1;
+        in_rules_section = 0;
+        $$ = $1; 
+      }
+    | syntax_rules RULES_DIRECTIVE { 
+        in_tokens_section = 0;
+        in_rules_section = 1;
+        $$ = $1; 
+      }
+    | syntax_rules definitions_list {
+        if (in_tokens_section) add_child($1, $2);
+        else yyerror("Tokens outside TOKENS section");
+        $$ = $1;
+      }
     ;
 
 rule
@@ -179,6 +204,9 @@ int main(int argc, char *argv[]) {
         }
         yyin = file;
     }
+    
+    in_tokens_section = 0;
+    in_rules_section = 1; // Start in rules section by default
     
     yyparse();
     

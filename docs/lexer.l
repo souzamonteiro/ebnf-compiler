@@ -24,6 +24,9 @@ extern FILE *yyin;
 "//".*        { /* ignore line comments */ }
 "(*"([^*]|"*"[^)])*"*)" { /* ignore block comments */ }
 
+"%TOKENS%"    { return TOKENS_DIRECTIVE; }
+"%RULES%"     { return RULES_DIRECTIVE; }
+
 "="           { return EQUALS; }
 "|"           { return PIPE; }
 ";"           { return SEMICOLON; }

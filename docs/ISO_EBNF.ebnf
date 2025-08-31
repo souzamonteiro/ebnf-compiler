@@ -1,75 +1,75 @@
 (* ============== MAIN SYNTAX ============== *)
 syntax = { rule | directive | comment | space } ;
 
-rule = meta-identifier, defining-symbol, definitions-list, terminator-symbol ;
+rule = meta_identifier, defining_symbol, definitions_list, terminator_symbol ;
 
-directive = directive-symbol, meta-identifier, [ group ], directive-symbol ;
+directive = directive_symbol, meta_identifier, [ group ], directive_symbol ;
 
-definitions-list = single-definition, { definition-separator-symbol, single-definition } ;
+definitions_list = single_definition, { definition_separator_symbol, single_definition } ;
 
-single-definition = syntactic-term, { concatenate-symbol, syntactic-term } ;
+single_definition = syntactic_term, { concatenate_symbol, syntactic_term } ;
 
-syntactic-term = syntactic-factor, [ except-symbol, syntactic-exception ] ;
+syntactic_term = syntactic_factor, [ except_symbol, syntactic_exception ] ;
 
-syntactic-factor = [ integer, repetition-symbol ], syntactic-primary ;
+syntactic_factor = [ integer, repetition_symbol ], syntactic_primary ;
 
-syntactic-primary = optional-sequence 
-                  | repeated-sequence 
-                  | grouped-sequence 
-                  | meta-identifier 
-                  | terminal-string 
-                  | special-sequence 
-                  | empty-sequence
-                  | char-range ;
+syntactic_primary = optional_sequence 
+                  | repeated_sequence 
+                  | grouped_sequence 
+                  | meta_identifier 
+                  | terminal_string 
+                  | special_sequence 
+                  | empty_sequence
+                  | char_range ;
 
 (* ============== SEQUENCE CONSTRUCTIONS ============== *)
-optional-sequence = start-option-symbol, definitions-list, end-option-symbol ;
+optional_sequence = start_option_symbol, definitions_list, end_option_symbol ;
 
-repeated-sequence = start-repeat-symbol, definitions-list, end-repeat-symbol ;
+repeated_sequence = start_repeat_symbol, definitions_list, end_repeat_symbol ;
 
-grouped-sequence = start-group-symbol, definitions-list, end-group-symbol ;
+grouped_sequence = start_group_symbol, definitions_list, end_group_symbol ;
 
 %TOKENS%
 
 (* ============== BASIC ELEMENTS ============== *)
-meta-identifier = letter, { meta-identifier-character } ;
+meta_identifier = letter, { meta_identifier_character } ;
 
-integer = decimal-digit, { decimal-digit } ;
+integer = decimal_digit, { decimal_digit } ;
 
-terminal-string = first-quote-symbol, { first-terminal-character }, first-quote-symbol
-                | second-quote-symbol, { second-terminal-character }, second-quote-symbol ;
+terminal_string = first_quote_symbol, { first_terminal_character }, first_quote_symbol
+                | second_quote_symbol, { second_terminal_character }, second_quote_symbol ;
 
-special-sequence = special-sequence-symbol, { special-sequence-character }, special-sequence-symbol ;
+special_sequence = special_sequence_symbol, { special_sequence_character }, special_sequence_symbol ;
 
-empty-sequence = ; (* Empty string *)
+empty_sequence = ; (* Empty string *)
 
 (* ============== EXTENSION: CHARACTER RANGES ============== *)
-char-range = hex-char, range-symbol, hex-char ;
+char_range = hex_char, range_symbol, hex_char ;
 
-hex-char = hex-prefix, hex-digit, hex-digit 
-         | hex-prefix, hex-digit, hex-digit, hex-digit, hex-digit ;
+hex_char = hex_prefix, hex_digit, hex_digit 
+         | hex_prefix, hex_digit, hex_digit, hex_digit, hex_digit ;
 
 (* ============== TERMINAL SYMBOLS ============== *)
-defining-symbol = '=' ;
-definition-separator-symbol = '|' ;
-concatenate-symbol = ',' ;
-terminator-symbol = ';' ;
-except-symbol = '-' ;
-repetition-symbol = '*' ;
-range-symbol = '..' ;
-hex-prefix = '#' ;
-directive-symbol = '%' ;
-first-quote-symbol = "'" ;
-second-quote-symbol = '"' ;
-special-sequence-symbol = '?' ;
-start-option-symbol = '[' ;
-end-option-symbol = ']' ;
-start-repeat-symbol = '{' ;
-end-repeat-symbol = '}' ;
-start-group-symbol = '(' ;
-end-group-symbol = ')' ;
-start-comment-symbol = '(*' ;
-end-comment-symbol = '*)' ;
+defining_symbol = '=' ;
+definition_separator_symbol = '|' ;
+concatenate_symbol = ',' ;
+terminator_symbol = ';' ;
+except_symbol = '-' ;
+repetition_symbol = '*' ;
+range_symbol = '..' ;
+hex_prefix = '#' ;
+directive_symbol = '%' ;
+first_quote_symbol = "'" ;
+second_quote_symbol = '"' ;
+special_sequence_symbol = '?' ;
+start_option_symbol = '[' ;
+end_option_symbol = ']' ;
+start_repeat_symbol = '{' ;
+end_repeat_symbol = '}' ;
+start_group_symbol = '(' ;
+end_group_symbol = ')' ;
+start_comment_symbol = '(*' ;
+end_comment_symbol = '*)' ;
 
 (* ============== CHARACTERS ============== *)
 letter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' 
@@ -79,22 +79,22 @@ letter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J'
        | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' 
        | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' ;
 
-decimal-digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
+decimal_digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
-hex-digit = decimal-digit 
+hex_digit = decimal_digit 
           | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' 
           | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' ;
 
-meta-identifier-character = letter | decimal-digit ;
+meta_identifier_character = letter | decimal_digit | '_';
 
-first-terminal-character = terminal-character - first-quote-symbol ;
-second-terminal-character = terminal-character - second-quote-symbol ;
-special-sequence-character = terminal-character - special-sequence-symbol ;
+first_terminal_character = terminal_character - first_quote_symbol ;
+second_terminal_character = terminal_character - second_quote_symbol ;
+special_sequence_character = terminal_character - special_sequence_symbol ;
 
-terminal-character = #0000 .. #ffff ;
+terminal_character = #0000 .. #ffff ;
 
 (* ============== COMMENTS AND WHITESPACE (ignored) ============== *)
-comment = block-comment | line-comment ;
-block-comment = start-comment-symbol, { character - '*' | '*', character - ')' }, end-comment-symbol ;
-line-comment = '//', { character - ( '\n' | '\r' ) }, ( '\n' | '\r' ) ;
+comment = block_comment | line_comment ;
+block_comment = start_comment_symbol, { character - '*' | '*', character - ')' }, end_comment_symbol ;
+line_comment = '//', { character - ( '\n' | '\r' ) }, ( '\n' | '\r' ) ;
 space = ' ' | '\t' | '\n' | '\r' ;
