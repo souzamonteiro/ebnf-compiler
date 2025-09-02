@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ast>
   <SYNTAX>
-    <RULE value="">
+    <RULE value="syntax">
       <REPEATED_SEQUENCE>
         <ALTERNATIVE value="|">
           <ALTERNATIVE value="|">
@@ -15,7 +15,7 @@
         </ALTERNATIVE>
       </REPEATED_SEQUENCE>
     </RULE>
-    <RULE value="">
+    <RULE value="rule">
       <CONCATENATION value=",">
         <CONCATENATION value=",">
           <CONCATENATION value=",">
@@ -27,7 +27,7 @@
         <META_IDENTIFIER value="terminator_symbol"/>
       </CONCATENATION>
     </RULE>
-    <RULE value="">
+    <RULE value="directive">
       <CONCATENATION value=",">
         <CONCATENATION value=",">
           <CONCATENATION value=",">
@@ -41,7 +41,7 @@
         <META_IDENTIFIER value="directive_symbol"/>
       </CONCATENATION>
     </RULE>
-    <RULE value="">
+    <RULE value="definitions_list">
       <CONCATENATION value=",">
         <META_IDENTIFIER value="single_definition"/>
         <REPEATED_SEQUENCE>
@@ -52,7 +52,7 @@
         </REPEATED_SEQUENCE>
       </CONCATENATION>
     </RULE>
-    <RULE value="">
+    <RULE value="single_definition">
       <CONCATENATION value=",">
         <META_IDENTIFIER value="syntactic_term"/>
         <REPEATED_SEQUENCE>
@@ -63,7 +63,7 @@
         </REPEATED_SEQUENCE>
       </CONCATENATION>
     </RULE>
-    <RULE value="">
+    <RULE value="syntactic_term">
       <CONCATENATION value=",">
         <META_IDENTIFIER value="syntactic_factor"/>
         <OPTIONAL_SEQUENCE>
@@ -74,7 +74,7 @@
         </OPTIONAL_SEQUENCE>
       </CONCATENATION>
     </RULE>
-    <RULE value="">
+    <RULE value="syntactic_factor">
       <CONCATENATION value=",">
         <OPTIONAL_SEQUENCE>
           <CONCATENATION value=",">
@@ -85,7 +85,7 @@
         <META_IDENTIFIER value="syntactic_primary"/>
       </CONCATENATION>
     </RULE>
-    <RULE value="">
+    <RULE value="syntactic_primary">
       <ALTERNATIVE value="|">
         <ALTERNATIVE value="|">
           <ALTERNATIVE value="|">
@@ -109,7 +109,7 @@
         <META_IDENTIFIER value="char_range"/>
       </ALTERNATIVE>
     </RULE>
-    <RULE value="">
+    <RULE value="optional_sequence">
       <CONCATENATION value=",">
         <CONCATENATION value=",">
           <META_IDENTIFIER value="start_option_symbol"/>
@@ -118,7 +118,7 @@
         <META_IDENTIFIER value="end_option_symbol"/>
       </CONCATENATION>
     </RULE>
-    <RULE value="">
+    <RULE value="repeated_sequence">
       <CONCATENATION value=",">
         <CONCATENATION value=",">
           <META_IDENTIFIER value="start_repeat_symbol"/>
@@ -127,7 +127,7 @@
         <META_IDENTIFIER value="end_repeat_symbol"/>
       </CONCATENATION>
     </RULE>
-    <RULE value="">
+    <RULE value="grouped_sequence">
       <CONCATENATION value=",">
         <CONCATENATION value=",">
           <META_IDENTIFIER value="start_group_symbol"/>
@@ -138,7 +138,7 @@
     </RULE>
     <DIRECTIVE value="TOKENS_SECTION"/>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="meta_identifier">
         <CONCATENATION value=",">
           <META_IDENTIFIER value="letter"/>
           <REPEATED_SEQUENCE>
@@ -148,7 +148,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="integer">
         <CONCATENATION value=",">
           <META_IDENTIFIER value="decimal_digit"/>
           <REPEATED_SEQUENCE>
@@ -158,7 +158,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="terminal_string">
         <ALTERNATIVE value="|">
           <CONCATENATION value=",">
             <CONCATENATION value=",">
@@ -182,7 +182,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="special_sequence">
         <CONCATENATION value=",">
           <CONCATENATION value=",">
             <META_IDENTIFIER value="special_sequence_symbol"/>
@@ -195,12 +195,12 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="empty_sequence">
         <EMPTY_SEQUENCE/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="char_range">
         <CONCATENATION value=",">
           <CONCATENATION value=",">
             <META_IDENTIFIER value="hex_char"/>
@@ -211,7 +211,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="hex_char">
         <ALTERNATIVE value="|">
           <CONCATENATION value=",">
             <CONCATENATION value=",">
@@ -237,107 +237,107 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="defining_symbol">
         <TERMINAL_STRING value="&apos;=&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="definition_separator_symbol">
         <TERMINAL_STRING value="&apos;|&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="concatenate_symbol">
         <TERMINAL_STRING value="&apos;,&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="terminator_symbol">
         <TERMINAL_STRING value="&apos;;&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="except_symbol">
         <TERMINAL_STRING value="&apos;-&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="repetition_symbol">
         <TERMINAL_STRING value="&apos;*&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="range_symbol">
         <TERMINAL_STRING value="&apos;..&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="hex_prefix">
         <TERMINAL_STRING value="&apos;#&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="directive_symbol">
         <TERMINAL_STRING value="&apos;%&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="first_quote_symbol">
         <TERMINAL_STRING value="&quot;&apos;&quot;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="second_quote_symbol">
         <TERMINAL_STRING value="&apos;&quot;&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="special_sequence_symbol">
         <TERMINAL_STRING value="&apos;?&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="start_option_symbol">
         <TERMINAL_STRING value="&apos;[&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="end_option_symbol">
         <TERMINAL_STRING value="&apos;]&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="start_repeat_symbol">
         <TERMINAL_STRING value="&apos;{&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="end_repeat_symbol">
         <TERMINAL_STRING value="&apos;}&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="start_group_symbol">
         <TERMINAL_STRING value="&apos;(&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="end_group_symbol">
         <TERMINAL_STRING value="&apos;)&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="start_comment_symbol">
         <TERMINAL_STRING value="&apos;(*&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="end_comment_symbol">
         <TERMINAL_STRING value="&apos;*)&apos;"/>
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="letter">
         <ALTERNATIVE value="|">
           <ALTERNATIVE value="|">
             <ALTERNATIVE value="|">
@@ -495,7 +495,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="decimal_digit">
         <ALTERNATIVE value="|">
           <ALTERNATIVE value="|">
             <ALTERNATIVE value="|">
@@ -527,7 +527,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="hex_digit">
         <ALTERNATIVE value="|">
           <ALTERNATIVE value="|">
             <ALTERNATIVE value="|">
@@ -568,7 +568,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="meta_identifier_character">
         <ALTERNATIVE value="|">
           <ALTERNATIVE value="|">
             <META_IDENTIFIER value="letter"/>
@@ -579,7 +579,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="first_terminal_character">
         <SYNTACTIC_TERM value="-">
           <META_IDENTIFIER value="terminal_character"/>
           <META_IDENTIFIER value="first_quote_symbol"/>
@@ -587,7 +587,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="second_terminal_character">
         <SYNTACTIC_TERM value="-">
           <META_IDENTIFIER value="terminal_character"/>
           <META_IDENTIFIER value="second_quote_symbol"/>
@@ -595,7 +595,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="special_sequence_character">
         <SYNTACTIC_TERM value="-">
           <META_IDENTIFIER value="terminal_character"/>
           <META_IDENTIFIER value="special_sequence_symbol"/>
@@ -603,7 +603,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="terminal_character">
         <CHAR_RANGE>
           <HEX_CHAR value="#0000"/>
           <HEX_CHAR value="#ffff"/>
@@ -611,7 +611,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="comment">
         <ALTERNATIVE value="|">
           <META_IDENTIFIER value="block_comment"/>
           <META_IDENTIFIER value="line_comment"/>
@@ -619,7 +619,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="block_comment">
         <CONCATENATION value=",">
           <CONCATENATION value=",">
             <META_IDENTIFIER value="start_comment_symbol"/>
@@ -644,7 +644,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="line_comment">
         <CONCATENATION value=",">
           <CONCATENATION value=",">
             <TERMINAL_STRING value="&apos;//&apos;"/>
@@ -670,7 +670,7 @@
       </RULE>
     </RULE>
     <RULE value="token">
-      <RULE value="">
+      <RULE value="space">
         <ALTERNATIVE value="|">
           <ALTERNATIVE value="|">
             <ALTERNATIVE value="|">

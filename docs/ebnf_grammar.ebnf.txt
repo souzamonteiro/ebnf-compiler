@@ -1,6 +1,6 @@
 Abstract Syntax Tree:
 SYNTAX
-  RULE: 
+  RULE: syntax
     REPEATED_SEQUENCE
       ALTERNATIVE: |
         ALTERNATIVE: |
@@ -9,7 +9,7 @@ SYNTAX
             META_IDENTIFIER: directive
           META_IDENTIFIER: comment
         META_IDENTIFIER: space
-  RULE: 
+  RULE: rule
     CONCATENATION: ,
       CONCATENATION: ,
         CONCATENATION: ,
@@ -17,7 +17,7 @@ SYNTAX
           META_IDENTIFIER: defining_symbol
         META_IDENTIFIER: definitions_list
       META_IDENTIFIER: terminator_symbol
-  RULE: 
+  RULE: directive
     CONCATENATION: ,
       CONCATENATION: ,
         CONCATENATION: ,
@@ -26,35 +26,35 @@ SYNTAX
         OPTIONAL_SEQUENCE
           META_IDENTIFIER: group
       META_IDENTIFIER: directive_symbol
-  RULE: 
+  RULE: definitions_list
     CONCATENATION: ,
       META_IDENTIFIER: single_definition
       REPEATED_SEQUENCE
         CONCATENATION: ,
           META_IDENTIFIER: definition_separator_symbol
           META_IDENTIFIER: single_definition
-  RULE: 
+  RULE: single_definition
     CONCATENATION: ,
       META_IDENTIFIER: syntactic_term
       REPEATED_SEQUENCE
         CONCATENATION: ,
           META_IDENTIFIER: concatenate_symbol
           META_IDENTIFIER: syntactic_term
-  RULE: 
+  RULE: syntactic_term
     CONCATENATION: ,
       META_IDENTIFIER: syntactic_factor
       OPTIONAL_SEQUENCE
         CONCATENATION: ,
           META_IDENTIFIER: except_symbol
           META_IDENTIFIER: syntactic_exception
-  RULE: 
+  RULE: syntactic_factor
     CONCATENATION: ,
       OPTIONAL_SEQUENCE
         CONCATENATION: ,
           META_IDENTIFIER: integer
           META_IDENTIFIER: repetition_symbol
       META_IDENTIFIER: syntactic_primary
-  RULE: 
+  RULE: syntactic_primary
     ALTERNATIVE: |
       ALTERNATIVE: |
         ALTERNATIVE: |
@@ -70,19 +70,19 @@ SYNTAX
           META_IDENTIFIER: special_sequence
         META_IDENTIFIER: empty_sequence
       META_IDENTIFIER: char_range
-  RULE: 
+  RULE: optional_sequence
     CONCATENATION: ,
       CONCATENATION: ,
         META_IDENTIFIER: start_option_symbol
         META_IDENTIFIER: definitions_list
       META_IDENTIFIER: end_option_symbol
-  RULE: 
+  RULE: repeated_sequence
     CONCATENATION: ,
       CONCATENATION: ,
         META_IDENTIFIER: start_repeat_symbol
         META_IDENTIFIER: definitions_list
       META_IDENTIFIER: end_repeat_symbol
-  RULE: 
+  RULE: grouped_sequence
     CONCATENATION: ,
       CONCATENATION: ,
         META_IDENTIFIER: start_group_symbol
@@ -90,19 +90,19 @@ SYNTAX
       META_IDENTIFIER: end_group_symbol
   DIRECTIVE: TOKENS_SECTION
   RULE: token
-    RULE: 
+    RULE: meta_identifier
       CONCATENATION: ,
         META_IDENTIFIER: letter
         REPEATED_SEQUENCE
           META_IDENTIFIER: meta_identifier_character
   RULE: token
-    RULE: 
+    RULE: integer
       CONCATENATION: ,
         META_IDENTIFIER: decimal_digit
         REPEATED_SEQUENCE
           META_IDENTIFIER: decimal_digit
   RULE: token
-    RULE: 
+    RULE: terminal_string
       ALTERNATIVE: |
         CONCATENATION: ,
           CONCATENATION: ,
@@ -117,7 +117,7 @@ SYNTAX
               META_IDENTIFIER: second_terminal_character
           META_IDENTIFIER: second_quote_symbol
   RULE: token
-    RULE: 
+    RULE: special_sequence
       CONCATENATION: ,
         CONCATENATION: ,
           META_IDENTIFIER: special_sequence_symbol
@@ -125,17 +125,17 @@ SYNTAX
             META_IDENTIFIER: special_sequence_character
         META_IDENTIFIER: special_sequence_symbol
   RULE: token
-    RULE: 
+    RULE: empty_sequence
       EMPTY_SEQUENCE: 
   RULE: token
-    RULE: 
+    RULE: char_range
       CONCATENATION: ,
         CONCATENATION: ,
           META_IDENTIFIER: hex_char
           META_IDENTIFIER: range_symbol
         META_IDENTIFIER: hex_char
   RULE: token
-    RULE: 
+    RULE: hex_char
       ALTERNATIVE: |
         CONCATENATION: ,
           CONCATENATION: ,
@@ -152,67 +152,67 @@ SYNTAX
             META_IDENTIFIER: hex_digit
           META_IDENTIFIER: hex_digit
   RULE: token
-    RULE: 
+    RULE: defining_symbol
       TERMINAL_STRING: '='
   RULE: token
-    RULE: 
+    RULE: definition_separator_symbol
       TERMINAL_STRING: '|'
   RULE: token
-    RULE: 
+    RULE: concatenate_symbol
       TERMINAL_STRING: ','
   RULE: token
-    RULE: 
+    RULE: terminator_symbol
       TERMINAL_STRING: ';'
   RULE: token
-    RULE: 
+    RULE: except_symbol
       TERMINAL_STRING: '-'
   RULE: token
-    RULE: 
+    RULE: repetition_symbol
       TERMINAL_STRING: '*'
   RULE: token
-    RULE: 
+    RULE: range_symbol
       TERMINAL_STRING: '..'
   RULE: token
-    RULE: 
+    RULE: hex_prefix
       TERMINAL_STRING: '#'
   RULE: token
-    RULE: 
+    RULE: directive_symbol
       TERMINAL_STRING: '%'
   RULE: token
-    RULE: 
+    RULE: first_quote_symbol
       TERMINAL_STRING: "'"
   RULE: token
-    RULE: 
+    RULE: second_quote_symbol
       TERMINAL_STRING: '"'
   RULE: token
-    RULE: 
+    RULE: special_sequence_symbol
       TERMINAL_STRING: '?'
   RULE: token
-    RULE: 
+    RULE: start_option_symbol
       TERMINAL_STRING: '['
   RULE: token
-    RULE: 
+    RULE: end_option_symbol
       TERMINAL_STRING: ']'
   RULE: token
-    RULE: 
+    RULE: start_repeat_symbol
       TERMINAL_STRING: '{'
   RULE: token
-    RULE: 
+    RULE: end_repeat_symbol
       TERMINAL_STRING: '}'
   RULE: token
-    RULE: 
+    RULE: start_group_symbol
       TERMINAL_STRING: '('
   RULE: token
-    RULE: 
+    RULE: end_group_symbol
       TERMINAL_STRING: ')'
   RULE: token
-    RULE: 
+    RULE: start_comment_symbol
       TERMINAL_STRING: '(*'
   RULE: token
-    RULE: 
+    RULE: end_comment_symbol
       TERMINAL_STRING: '*)'
   RULE: token
-    RULE: 
+    RULE: letter
       ALTERNATIVE: |
         ALTERNATIVE: |
           ALTERNATIVE: |
@@ -317,7 +317,7 @@ SYNTAX
           TERMINAL_STRING: 'y'
         TERMINAL_STRING: 'z'
   RULE: token
-    RULE: 
+    RULE: decimal_digit
       ALTERNATIVE: |
         ALTERNATIVE: |
           ALTERNATIVE: |
@@ -338,7 +338,7 @@ SYNTAX
           TERMINAL_STRING: '8'
         TERMINAL_STRING: '9'
   RULE: token
-    RULE: 
+    RULE: hex_digit
       ALTERNATIVE: |
         ALTERNATIVE: |
           ALTERNATIVE: |
@@ -365,39 +365,39 @@ SYNTAX
           TERMINAL_STRING: 'e'
         TERMINAL_STRING: 'f'
   RULE: token
-    RULE: 
+    RULE: meta_identifier_character
       ALTERNATIVE: |
         ALTERNATIVE: |
           META_IDENTIFIER: letter
           META_IDENTIFIER: decimal_digit
         TERMINAL_STRING: '_'
   RULE: token
-    RULE: 
+    RULE: first_terminal_character
       SYNTACTIC_TERM: -
         META_IDENTIFIER: terminal_character
         META_IDENTIFIER: first_quote_symbol
   RULE: token
-    RULE: 
+    RULE: second_terminal_character
       SYNTACTIC_TERM: -
         META_IDENTIFIER: terminal_character
         META_IDENTIFIER: second_quote_symbol
   RULE: token
-    RULE: 
+    RULE: special_sequence_character
       SYNTACTIC_TERM: -
         META_IDENTIFIER: terminal_character
         META_IDENTIFIER: special_sequence_symbol
   RULE: token
-    RULE: 
+    RULE: terminal_character
       CHAR_RANGE
         HEX_CHAR: #0000
         HEX_CHAR: #ffff
   RULE: token
-    RULE: 
+    RULE: comment
       ALTERNATIVE: |
         META_IDENTIFIER: block_comment
         META_IDENTIFIER: line_comment
   RULE: token
-    RULE: 
+    RULE: block_comment
       CONCATENATION: ,
         CONCATENATION: ,
           META_IDENTIFIER: start_comment_symbol
@@ -413,7 +413,7 @@ SYNTAX
                   TERMINAL_STRING: ')'
         META_IDENTIFIER: end_comment_symbol
   RULE: token
-    RULE: 
+    RULE: line_comment
       CONCATENATION: ,
         CONCATENATION: ,
           TERMINAL_STRING: '//'
@@ -429,7 +429,7 @@ SYNTAX
             TERMINAL_STRING: '\n'
             TERMINAL_STRING: '\r'
   RULE: token
-    RULE: 
+    RULE: space
       ALTERNATIVE: |
         ALTERNATIVE: |
           ALTERNATIVE: |

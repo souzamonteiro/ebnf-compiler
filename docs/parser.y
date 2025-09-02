@@ -84,7 +84,7 @@ syntax_rules
 
 rule
     : meta_identifier EQUALS definitions_list SEMICOLON {
-        $$ = create_node(NODE_RULE, $1);
+        $$ = create_node(NODE_RULE, $1->value);
         add_child($$, $3);
         free($1);
       }
@@ -172,7 +172,14 @@ grouped_sequence
     ;
 
 meta_identifier
-    : IDENTIFIER { $$ = create_node(NODE_META_IDENTIFIER, $1); free($1); }
+    : IDENTIFIER { 
+        if ($1 == NULL) {
+            yyerror("Invalid identifier");
+            YYABORT;
+        }
+        $$ = create_node(NODE_META_IDENTIFIER, $1); 
+        free($1);
+      }
     ;
 
 integer

@@ -546,7 +546,7 @@ static const yytype_uint8 yyrline[] =
        0,    38,    38,    42,    43,    55,    64,    71,    86,    94,
       98,   106,   107,   115,   116,   124,   125,   133,   134,   143,
      144,   145,   146,   147,   148,   149,   150,   154,   161,   168,
-     175,   179,   183,   187,   194,   198
+     175,   186,   190,   194,   201,   205
 };
 #endif
 
@@ -1217,7 +1217,7 @@ yyreduce:
   case 8: /* rule: meta_identifier EQUALS definitions_list SEMICOLON  */
 #line 86 "parser.y"
                                                         {
-        (yyval.node) = create_node(NODE_RULE, (yyvsp[-3].node));
+        (yyval.node) = create_node(NODE_RULE, (yyvsp[-3].node)->value);
         add_child((yyval.node), (yyvsp[-1].node));
         free((yyvsp[-3].node));
       }
@@ -1385,50 +1385,57 @@ yyreduce:
 
   case 30: /* meta_identifier: IDENTIFIER  */
 #line 175 "parser.y"
-                 { (yyval.node) = create_node(NODE_META_IDENTIFIER, (yyvsp[0].str)); free((yyvsp[0].str)); }
-#line 1390 "parser.tab.c"
+                 { 
+        if ((yyvsp[0].str) == NULL) {
+            yyerror("Invalid identifier");
+            YYABORT;
+        }
+        (yyval.node) = create_node(NODE_META_IDENTIFIER, (yyvsp[0].str)); 
+        free((yyvsp[0].str));
+      }
+#line 1397 "parser.tab.c"
     break;
 
   case 31: /* integer: INTEGER  */
-#line 179 "parser.y"
+#line 186 "parser.y"
               { (yyval.node) = create_node(NODE_INTEGER, (yyvsp[0].str)); free((yyvsp[0].str)); }
-#line 1396 "parser.tab.c"
+#line 1403 "parser.tab.c"
     break;
 
   case 32: /* terminal_string: STRING  */
-#line 183 "parser.y"
+#line 190 "parser.y"
              { (yyval.node) = create_node(NODE_TERMINAL_STRING, (yyvsp[0].str)); free((yyvsp[0].str)); }
-#line 1402 "parser.tab.c"
+#line 1409 "parser.tab.c"
     break;
 
   case 33: /* special_sequence: QUESTION CHARACTER QUESTION  */
-#line 187 "parser.y"
+#line 194 "parser.y"
                                   {
         (yyval.node) = create_node(NODE_SPECIAL_SEQUENCE, (yyvsp[-1].str));
         free((yyvsp[-1].str));
       }
-#line 1411 "parser.tab.c"
+#line 1418 "parser.tab.c"
     break;
 
   case 34: /* empty_sequence: %empty  */
-#line 194 "parser.y"
+#line 201 "parser.y"
       { (yyval.node) = create_node(NODE_EMPTY_SEQUENCE, ""); }
-#line 1417 "parser.tab.c"
+#line 1424 "parser.tab.c"
     break;
 
   case 35: /* char_range: HEX_CHAR RANGE HEX_CHAR  */
-#line 198 "parser.y"
+#line 205 "parser.y"
                               {
         (yyval.node) = create_node(NODE_CHAR_RANGE, NULL);
         add_child((yyval.node), create_node(NODE_HEX_CHAR, (yyvsp[-2].str)));
         add_child((yyval.node), create_node(NODE_HEX_CHAR, (yyvsp[0].str)));
         free((yyvsp[-2].str)); free((yyvsp[0].str));
       }
-#line 1428 "parser.tab.c"
+#line 1435 "parser.tab.c"
     break;
 
 
-#line 1432 "parser.tab.c"
+#line 1439 "parser.tab.c"
 
       default: break;
     }
@@ -1621,7 +1628,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 210 "parser.y"
+#line 217 "parser.y"
 
 
 void yyerror(const char *s) {
