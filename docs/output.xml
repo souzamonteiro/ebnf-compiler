@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ast>
+  <SYNTAX>
+    <RULE value="">
+      <REPEATED_SEQUENCE>
+        <ALTERNATIVE value="|">
+          <ALTERNATIVE value="|">
+            <ALTERNATIVE value="|">
+              <META_IDENTIFIER value="rule"/>
+              <META_IDENTIFIER value="directive"/>
+            </ALTERNATIVE>
+            <META_IDENTIFIER value="comment"/>
+          </ALTERNATIVE>
+          <META_IDENTIFIER value="space"/>
+        </ALTERNATIVE>
+      </REPEATED_SEQUENCE>
+    </RULE>
+    <RULE value="">
+      <CONCATENATION value=",">
+        <CONCATENATION value=",">
+          <CONCATENATION value=",">
+            <META_IDENTIFIER value="meta_identifier"/>
+            <META_IDENTIFIER value="defining_symbol"/>
+          </CONCATENATION>
+          <META_IDENTIFIER value="definitions_list"/>
+        </CONCATENATION>
+        <META_IDENTIFIER value="terminator_symbol"/>
+      </CONCATENATION>
+    </RULE>
+    <DIRECTIVE value="TOKENS_SECTION"/>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;=&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;;&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;,&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;|&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;-&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;*&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;..&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;#&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;%&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&quot;&apos;&quot;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;&quot;&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;?&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;[&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;]&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;{&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;}&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;(&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;)&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;(*&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <TERMINAL_STRING value="&apos;*)&apos;"/>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <CONCATENATION value=",">
+          <META_IDENTIFIER value="letter"/>
+          <REPEATED_SEQUENCE>
+            <META_IDENTIFIER value="meta_identifier_character"/>
+          </REPEATED_SEQUENCE>
+        </CONCATENATION>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <ALTERNATIVE value="|">
+          <ALTERNATIVE value="|">
+            <ALTERNATIVE value="|">
+              <ALTERNATIVE value="|">
+                <ALTERNATIVE value="|">
+                  <ALTERNATIVE value="|">
+                    <ALTERNATIVE value="|">
+                      <ALTERNATIVE value="|">
+                        <ALTERNATIVE value="|">
+                          <ALTERNATIVE value="|">
+                            <ALTERNATIVE value="|">
+                              <ALTERNATIVE value="|">
+                                <ALTERNATIVE value="|">
+                                  <ALTERNATIVE value="|">
+                                    <ALTERNATIVE value="|">
+                                      <ALTERNATIVE value="|">
+                                        <ALTERNATIVE value="|">
+                                          <ALTERNATIVE value="|">
+                                            <ALTERNATIVE value="|">
+                                              <ALTERNATIVE value="|">
+                                                <ALTERNATIVE value="|">
+                                                  <ALTERNATIVE value="|">
+                                                    <ALTERNATIVE value="|">
+                                                      <ALTERNATIVE value="|">
+                                                        <ALTERNATIVE value="|">
+                                                          <ALTERNATIVE value="|">
+                                                            <ALTERNATIVE value="|">
+                                                              <ALTERNATIVE value="|">
+                                                                <ALTERNATIVE value="|">
+                                                                  <ALTERNATIVE value="|">
+                                                                    <ALTERNATIVE value="|">
+                                                                      <ALTERNATIVE value="|">
+                                                                        <ALTERNATIVE value="|">
+                                                                          <ALTERNATIVE value="|">
+                                                                            <ALTERNATIVE value="|">
+                                                                              <ALTERNATIVE value="|">
+                                                                                <ALTERNATIVE value="|">
+                                                                                  <ALTERNATIVE value="|">
+                                                                                    <ALTERNATIVE value="|">
+                                                                                      <ALTERNATIVE value="|">
+                                                                                        <ALTERNATIVE value="|">
+                                                                                          <ALTERNATIVE value="|">
+                                                                                            <ALTERNATIVE value="|">
+                                                                                              <ALTERNATIVE value="|">
+                                                                                                <ALTERNATIVE value="|">
+                                                                                                  <ALTERNATIVE value="|">
+                                                                                                    <ALTERNATIVE value="|">
+                                                                                                      <ALTERNATIVE value="|">
+                                                                                                        <ALTERNATIVE value="|">
+                                                                                                          <ALTERNATIVE value="|">
+                                                                                                            <ALTERNATIVE value="|">
+                                                                                                              <TERMINAL_STRING value="&apos;A&apos;"/>
+                                                                                                              <TERMINAL_STRING value="&apos;B&apos;"/>
+                                                                                                            </ALTERNATIVE>
+                                                                                                            <TERMINAL_STRING value="&apos;C&apos;"/>
+                                                                                                          </ALTERNATIVE>
+                                                                                                          <TERMINAL_STRING value="&apos;D&apos;"/>
+                                                                                                        </ALTERNATIVE>
+                                                                                                        <TERMINAL_STRING value="&apos;E&apos;"/>
+                                                                                                      </ALTERNATIVE>
+                                                                                                      <TERMINAL_STRING value="&apos;F&apos;"/>
+                                                                                                    </ALTERNATIVE>
+                                                                                                    <TERMINAL_STRING value="&apos;G&apos;"/>
+                                                                                                  </ALTERNATIVE>
+                                                                                                  <TERMINAL_STRING value="&apos;H&apos;"/>
+                                                                                                </ALTERNATIVE>
+                                                                                                <TERMINAL_STRING value="&apos;I&apos;"/>
+                                                                                              </ALTERNATIVE>
+                                                                                              <TERMINAL_STRING value="&apos;J&apos;"/>
+                                                                                            </ALTERNATIVE>
+                                                                                            <TERMINAL_STRING value="&apos;K&apos;"/>
+                                                                                          </ALTERNATIVE>
+                                                                                          <TERMINAL_STRING value="&apos;L&apos;"/>
+                                                                                        </ALTERNATIVE>
+                                                                                        <TERMINAL_STRING value="&apos;M&apos;"/>
+                                                                                      </ALTERNATIVE>
+                                                                                      <TERMINAL_STRING value="&apos;N&apos;"/>
+                                                                                    </ALTERNATIVE>
+                                                                                    <TERMINAL_STRING value="&apos;O&apos;"/>
+                                                                                  </ALTERNATIVE>
+                                                                                  <TERMINAL_STRING value="&apos;P&apos;"/>
+                                                                                </ALTERNATIVE>
+                                                                                <TERMINAL_STRING value="&apos;Q&apos;"/>
+                                                                              </ALTERNATIVE>
+                                                                              <TERMINAL_STRING value="&apos;R&apos;"/>
+                                                                            </ALTERNATIVE>
+                                                                            <TERMINAL_STRING value="&apos;S&apos;"/>
+                                                                          </ALTERNATIVE>
+                                                                          <TERMINAL_STRING value="&apos;T&apos;"/>
+                                                                        </ALTERNATIVE>
+                                                                        <TERMINAL_STRING value="&apos;U&apos;"/>
+                                                                      </ALTERNATIVE>
+                                                                      <TERMINAL_STRING value="&apos;V&apos;"/>
+                                                                    </ALTERNATIVE>
+                                                                    <TERMINAL_STRING value="&apos;W&apos;"/>
+                                                                  </ALTERNATIVE>
+                                                                  <TERMINAL_STRING value="&apos;X&apos;"/>
+                                                                </ALTERNATIVE>
+                                                                <TERMINAL_STRING value="&apos;Y&apos;"/>
+                                                              </ALTERNATIVE>
+                                                              <TERMINAL_STRING value="&apos;Z&apos;"/>
+                                                            </ALTERNATIVE>
+                                                            <TERMINAL_STRING value="&apos;a&apos;"/>
+                                                          </ALTERNATIVE>
+                                                          <TERMINAL_STRING value="&apos;b&apos;"/>
+                                                        </ALTERNATIVE>
+                                                        <TERMINAL_STRING value="&apos;c&apos;"/>
+                                                      </ALTERNATIVE>
+                                                      <TERMINAL_STRING value="&apos;d&apos;"/>
+                                                    </ALTERNATIVE>
+                                                    <TERMINAL_STRING value="&apos;e&apos;"/>
+                                                  </ALTERNATIVE>
+                                                  <TERMINAL_STRING value="&apos;f&apos;"/>
+                                                </ALTERNATIVE>
+                                                <TERMINAL_STRING value="&apos;g&apos;"/>
+                                              </ALTERNATIVE>
+                                              <TERMINAL_STRING value="&apos;h&apos;"/>
+                                            </ALTERNATIVE>
+                                            <TERMINAL_STRING value="&apos;i&apos;"/>
+                                          </ALTERNATIVE>
+                                          <TERMINAL_STRING value="&apos;j&apos;"/>
+                                        </ALTERNATIVE>
+                                        <TERMINAL_STRING value="&apos;k&apos;"/>
+                                      </ALTERNATIVE>
+                                      <TERMINAL_STRING value="&apos;l&apos;"/>
+                                    </ALTERNATIVE>
+                                    <TERMINAL_STRING value="&apos;m&apos;"/>
+                                  </ALTERNATIVE>
+                                  <TERMINAL_STRING value="&apos;n&apos;"/>
+                                </ALTERNATIVE>
+                                <TERMINAL_STRING value="&apos;o&apos;"/>
+                              </ALTERNATIVE>
+                              <TERMINAL_STRING value="&apos;p&apos;"/>
+                            </ALTERNATIVE>
+                            <TERMINAL_STRING value="&apos;q&apos;"/>
+                          </ALTERNATIVE>
+                          <TERMINAL_STRING value="&apos;r&apos;"/>
+                        </ALTERNATIVE>
+                        <TERMINAL_STRING value="&apos;s&apos;"/>
+                      </ALTERNATIVE>
+                      <TERMINAL_STRING value="&apos;t&apos;"/>
+                    </ALTERNATIVE>
+                    <TERMINAL_STRING value="&apos;u&apos;"/>
+                  </ALTERNATIVE>
+                  <TERMINAL_STRING value="&apos;v&apos;"/>
+                </ALTERNATIVE>
+                <TERMINAL_STRING value="&apos;w&apos;"/>
+              </ALTERNATIVE>
+              <TERMINAL_STRING value="&apos;x&apos;"/>
+            </ALTERNATIVE>
+            <TERMINAL_STRING value="&apos;y&apos;"/>
+          </ALTERNATIVE>
+          <TERMINAL_STRING value="&apos;z&apos;"/>
+        </ALTERNATIVE>
+      </RULE>
+    </RULE>
+    <RULE value="token">
+      <RULE value="">
+        <ALTERNATIVE value="|">
+          <ALTERNATIVE value="|">
+            <ALTERNATIVE value="|">
+              <ALTERNATIVE value="|">
+                <ALTERNATIVE value="|">
+                  <ALTERNATIVE value="|">
+                    <ALTERNATIVE value="|">
+                      <ALTERNATIVE value="|">
+                        <ALTERNATIVE value="|">
+                          <TERMINAL_STRING value="&apos;0&apos;"/>
+                          <TERMINAL_STRING value="&apos;1&apos;"/>
+                        </ALTERNATIVE>
+                        <TERMINAL_STRING value="&apos;2&apos;"/>
+                      </ALTERNATIVE>
+                      <TERMINAL_STRING value="&apos;3&apos;"/>
+                    </ALTERNATIVE>
+                    <TERMINAL_STRING value="&apos;4&apos;"/>
+                  </ALTERNATIVE>
+                  <TERMINAL_STRING value="&apos;5&apos;"/>
+                </ALTERNATIVE>
+                <TERMINAL_STRING value="&apos;6&apos;"/>
+              </ALTERNATIVE>
+              <TERMINAL_STRING value="&apos;7&apos;"/>
+            </ALTERNATIVE>
+            <TERMINAL_STRING value="&apos;8&apos;"/>
+          </ALTERNATIVE>
+          <TERMINAL_STRING value="&apos;9&apos;"/>
+        </ALTERNATIVE>
+      </RULE>
+    </RULE>
+  </SYNTAX>
+</ast>

@@ -81,8 +81,10 @@ int yylex(void);
 ASTNode* root;
 int in_tokens_section = 0;
 
+int output_xml = 0;
+char* output_filename = NULL;
 
-#line 86 "parser.tab.c"
+#line 88 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -541,10 +543,10 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    36,    36,    40,    41,    53,    62,    69,    84,    92,
-      96,   104,   105,   113,   114,   122,   123,   131,   132,   141,
-     142,   143,   144,   145,   146,   147,   148,   152,   159,   166,
-     173,   177,   181,   185,   192,   196
+       0,    38,    38,    42,    43,    55,    64,    71,    86,    94,
+      98,   106,   107,   115,   116,   124,   125,   133,   134,   143,
+     144,   145,   146,   147,   148,   149,   150,   154,   161,   168,
+     175,   179,   183,   187,   194,   198
 };
 #endif
 
@@ -1141,19 +1143,19 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* syntax: syntax_rules  */
-#line 36 "parser.y"
+#line 38 "parser.y"
                    { root = (yyvsp[0].node); }
-#line 1147 "parser.tab.c"
+#line 1149 "parser.tab.c"
     break;
 
   case 3: /* syntax_rules: %empty  */
-#line 40 "parser.y"
+#line 42 "parser.y"
                   { (yyval.node) = create_node(NODE_SYNTAX, NULL); }
-#line 1153 "parser.tab.c"
+#line 1155 "parser.tab.c"
     break;
 
   case 4: /* syntax_rules: syntax_rules rule  */
-#line 41 "parser.y"
+#line 43 "parser.y"
                         { 
         if (!in_tokens_section) {
             add_child((yyvsp[-1].node), (yyvsp[0].node));
@@ -1166,11 +1168,11 @@ yyreduce:
             (yyval.node) = (yyvsp[-1].node);
         }
       }
-#line 1170 "parser.tab.c"
+#line 1172 "parser.tab.c"
     break;
 
   case 5: /* syntax_rules: syntax_rules directive  */
-#line 53 "parser.y"
+#line 55 "parser.y"
                              { 
         if (!in_tokens_section) {
             add_child((yyvsp[-1].node), (yyvsp[0].node));
@@ -1180,11 +1182,11 @@ yyreduce:
             (yyval.node) = (yyvsp[-1].node);
         }
       }
-#line 1184 "parser.tab.c"
+#line 1186 "parser.tab.c"
     break;
 
   case 6: /* syntax_rules: syntax_rules TOKENS_DIRECTIVE  */
-#line 62 "parser.y"
+#line 64 "parser.y"
                                     { 
         in_tokens_section = 1;
         // Adiciona um marcador na AST para a seção de tokens
@@ -1192,11 +1194,11 @@ yyreduce:
         add_child((yyvsp[-1].node), tokens_section);
         (yyval.node) = (yyvsp[-1].node); 
       }
-#line 1196 "parser.tab.c"
+#line 1198 "parser.tab.c"
     break;
 
   case 7: /* syntax_rules: syntax_rules definitions_list  */
-#line 69 "parser.y"
+#line 71 "parser.y"
                                     {
         if (in_tokens_section) {
             // Trata como definição de token na seção de tokens
@@ -1209,224 +1211,224 @@ yyreduce:
             (yyval.node) = (yyvsp[-1].node);
         }
       }
-#line 1213 "parser.tab.c"
+#line 1215 "parser.tab.c"
     break;
 
   case 8: /* rule: meta_identifier EQUALS definitions_list SEMICOLON  */
-#line 84 "parser.y"
+#line 86 "parser.y"
                                                         {
         (yyval.node) = create_node(NODE_RULE, (yyvsp[-3].node));
         add_child((yyval.node), (yyvsp[-1].node));
         free((yyvsp[-3].node));
       }
-#line 1223 "parser.tab.c"
+#line 1225 "parser.tab.c"
     break;
 
   case 9: /* directive: PERCENT IDENTIFIER PERCENT  */
-#line 92 "parser.y"
+#line 94 "parser.y"
                                  {
         (yyval.node) = create_node(NODE_DIRECTIVE, (yyvsp[-1].str));
         free((yyvsp[-1].str));
       }
-#line 1232 "parser.tab.c"
+#line 1234 "parser.tab.c"
     break;
 
   case 10: /* directive: PERCENT IDENTIFIER grouped_sequence PERCENT  */
-#line 96 "parser.y"
+#line 98 "parser.y"
                                                   {
         (yyval.node) = create_node(NODE_DIRECTIVE, (yyvsp[-2].str));
         add_child((yyval.node), (yyvsp[-1].node));
         free((yyvsp[-2].str));
       }
-#line 1242 "parser.tab.c"
+#line 1244 "parser.tab.c"
     break;
 
   case 11: /* definitions_list: single_definition  */
-#line 104 "parser.y"
+#line 106 "parser.y"
                         { (yyval.node) = (yyvsp[0].node); }
-#line 1248 "parser.tab.c"
+#line 1250 "parser.tab.c"
     break;
 
   case 12: /* definitions_list: definitions_list PIPE single_definition  */
-#line 105 "parser.y"
+#line 107 "parser.y"
                                               {
         (yyval.node) = create_node(NODE_ALTERNATIVE, "|");
         add_child((yyval.node), (yyvsp[-2].node));
         add_child((yyval.node), (yyvsp[0].node));
       }
-#line 1258 "parser.tab.c"
+#line 1260 "parser.tab.c"
     break;
 
   case 13: /* single_definition: syntactic_term  */
-#line 113 "parser.y"
+#line 115 "parser.y"
                      { (yyval.node) = (yyvsp[0].node); }
-#line 1264 "parser.tab.c"
+#line 1266 "parser.tab.c"
     break;
 
   case 14: /* single_definition: single_definition COMMA syntactic_term  */
-#line 114 "parser.y"
+#line 116 "parser.y"
                                              {
         (yyval.node) = create_node(NODE_CONCATENATION, ",");
         add_child((yyval.node), (yyvsp[-2].node));
         add_child((yyval.node), (yyvsp[0].node));
       }
-#line 1274 "parser.tab.c"
+#line 1276 "parser.tab.c"
     break;
 
   case 15: /* syntactic_term: syntactic_factor  */
-#line 122 "parser.y"
+#line 124 "parser.y"
                        { (yyval.node) = (yyvsp[0].node); }
-#line 1280 "parser.tab.c"
+#line 1282 "parser.tab.c"
     break;
 
   case 16: /* syntactic_term: syntactic_factor MINUS syntactic_factor  */
-#line 123 "parser.y"
+#line 125 "parser.y"
                                               {
         (yyval.node) = create_node(NODE_SYNTACTIC_TERM, "-");
         add_child((yyval.node), (yyvsp[-2].node));
         add_child((yyval.node), (yyvsp[0].node));
       }
-#line 1290 "parser.tab.c"
+#line 1292 "parser.tab.c"
     break;
 
   case 17: /* syntactic_factor: syntactic_primary  */
-#line 131 "parser.y"
+#line 133 "parser.y"
                         { (yyval.node) = (yyvsp[0].node); }
-#line 1296 "parser.tab.c"
+#line 1298 "parser.tab.c"
     break;
 
   case 18: /* syntactic_factor: integer STAR syntactic_primary  */
-#line 132 "parser.y"
+#line 134 "parser.y"
                                      {
         (yyval.node) = create_node(NODE_SYNTACTIC_FACTOR, "*");
         add_child((yyval.node), create_node(NODE_INTEGER, (yyvsp[-2].node)));
         add_child((yyval.node), (yyvsp[0].node));
         free((yyvsp[-2].node));
       }
-#line 1307 "parser.tab.c"
+#line 1309 "parser.tab.c"
     break;
 
   case 19: /* syntactic_primary: optional_sequence  */
-#line 141 "parser.y"
+#line 143 "parser.y"
                         { (yyval.node) = (yyvsp[0].node); }
-#line 1313 "parser.tab.c"
+#line 1315 "parser.tab.c"
     break;
 
   case 20: /* syntactic_primary: repeated_sequence  */
-#line 142 "parser.y"
+#line 144 "parser.y"
                         { (yyval.node) = (yyvsp[0].node); }
-#line 1319 "parser.tab.c"
+#line 1321 "parser.tab.c"
     break;
 
   case 21: /* syntactic_primary: grouped_sequence  */
-#line 143 "parser.y"
+#line 145 "parser.y"
                        { (yyval.node) = (yyvsp[0].node); }
-#line 1325 "parser.tab.c"
+#line 1327 "parser.tab.c"
     break;
 
   case 22: /* syntactic_primary: meta_identifier  */
-#line 144 "parser.y"
+#line 146 "parser.y"
                       { (yyval.node) = (yyvsp[0].node); }
-#line 1331 "parser.tab.c"
+#line 1333 "parser.tab.c"
     break;
 
   case 23: /* syntactic_primary: terminal_string  */
-#line 145 "parser.y"
+#line 147 "parser.y"
                       { (yyval.node) = (yyvsp[0].node); }
-#line 1337 "parser.tab.c"
+#line 1339 "parser.tab.c"
     break;
 
   case 24: /* syntactic_primary: special_sequence  */
-#line 146 "parser.y"
+#line 148 "parser.y"
                        { (yyval.node) = (yyvsp[0].node); }
-#line 1343 "parser.tab.c"
+#line 1345 "parser.tab.c"
     break;
 
   case 25: /* syntactic_primary: empty_sequence  */
-#line 147 "parser.y"
+#line 149 "parser.y"
                      { (yyval.node) = (yyvsp[0].node); }
-#line 1349 "parser.tab.c"
+#line 1351 "parser.tab.c"
     break;
 
   case 26: /* syntactic_primary: char_range  */
-#line 148 "parser.y"
+#line 150 "parser.y"
                  { (yyval.node) = (yyvsp[0].node); }
-#line 1355 "parser.tab.c"
+#line 1357 "parser.tab.c"
     break;
 
   case 27: /* optional_sequence: LBRACKET definitions_list RBRACKET  */
-#line 152 "parser.y"
+#line 154 "parser.y"
                                          {
         (yyval.node) = create_node(NODE_OPTIONAL_SEQUENCE, NULL);
         add_child((yyval.node), (yyvsp[-1].node));
       }
-#line 1364 "parser.tab.c"
+#line 1366 "parser.tab.c"
     break;
 
   case 28: /* repeated_sequence: LBRACE definitions_list RBRACE  */
-#line 159 "parser.y"
+#line 161 "parser.y"
                                      {
         (yyval.node) = create_node(NODE_REPEATED_SEQUENCE, NULL);
         add_child((yyval.node), (yyvsp[-1].node));
       }
-#line 1373 "parser.tab.c"
+#line 1375 "parser.tab.c"
     break;
 
   case 29: /* grouped_sequence: LPAREN definitions_list RPAREN  */
-#line 166 "parser.y"
+#line 168 "parser.y"
                                      {
         (yyval.node) = create_node(NODE_GROUPED_SEQUENCE, NULL);
         add_child((yyval.node), (yyvsp[-1].node));
       }
-#line 1382 "parser.tab.c"
+#line 1384 "parser.tab.c"
     break;
 
   case 30: /* meta_identifier: IDENTIFIER  */
-#line 173 "parser.y"
+#line 175 "parser.y"
                  { (yyval.node) = create_node(NODE_META_IDENTIFIER, (yyvsp[0].str)); free((yyvsp[0].str)); }
-#line 1388 "parser.tab.c"
+#line 1390 "parser.tab.c"
     break;
 
   case 31: /* integer: INTEGER  */
-#line 177 "parser.y"
+#line 179 "parser.y"
               { (yyval.node) = create_node(NODE_INTEGER, (yyvsp[0].str)); free((yyvsp[0].str)); }
-#line 1394 "parser.tab.c"
+#line 1396 "parser.tab.c"
     break;
 
   case 32: /* terminal_string: STRING  */
-#line 181 "parser.y"
+#line 183 "parser.y"
              { (yyval.node) = create_node(NODE_TERMINAL_STRING, (yyvsp[0].str)); free((yyvsp[0].str)); }
-#line 1400 "parser.tab.c"
+#line 1402 "parser.tab.c"
     break;
 
   case 33: /* special_sequence: QUESTION CHARACTER QUESTION  */
-#line 185 "parser.y"
+#line 187 "parser.y"
                                   {
         (yyval.node) = create_node(NODE_SPECIAL_SEQUENCE, (yyvsp[-1].str));
         free((yyvsp[-1].str));
       }
-#line 1409 "parser.tab.c"
+#line 1411 "parser.tab.c"
     break;
 
   case 34: /* empty_sequence: %empty  */
-#line 192 "parser.y"
+#line 194 "parser.y"
       { (yyval.node) = create_node(NODE_EMPTY_SEQUENCE, ""); }
-#line 1415 "parser.tab.c"
+#line 1417 "parser.tab.c"
     break;
 
   case 35: /* char_range: HEX_CHAR RANGE HEX_CHAR  */
-#line 196 "parser.y"
+#line 198 "parser.y"
                               {
         (yyval.node) = create_node(NODE_CHAR_RANGE, NULL);
         add_child((yyval.node), create_node(NODE_HEX_CHAR, (yyvsp[-2].str)));
         add_child((yyval.node), create_node(NODE_HEX_CHAR, (yyvsp[0].str)));
         free((yyvsp[-2].str)); free((yyvsp[0].str));
       }
-#line 1426 "parser.tab.c"
+#line 1428 "parser.tab.c"
     break;
 
 
-#line 1430 "parser.tab.c"
+#line 1432 "parser.tab.c"
 
       default: break;
     }
@@ -1619,7 +1621,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 208 "parser.y"
+#line 210 "parser.y"
 
 
 void yyerror(const char *s) {
@@ -1627,13 +1629,19 @@ void yyerror(const char *s) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc > 1) {
-        FILE *file = fopen(argv[1], "r");
-        if (!file) {
-            perror("Error opening file");
-            return 1;
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-xml") == 0) {
+            output_xml = 1;
+        } else if (strcmp(argv[i], "-o") == 0 && i + 1 < argc) {
+            output_filename = argv[++i];
+        } else {
+            FILE *file = fopen(argv[i], "r");
+            if (!file) {
+                perror("Error opening file");
+                return 1;
+            }
+            yyin = file;
         }
-        yyin = file;
     }
     
     in_tokens_section = 0;
@@ -1641,8 +1649,30 @@ int main(int argc, char *argv[]) {
     yyparse();
     
     if (root) {
-        printf("Abstract Syntax Tree:\n");
-        print_ast(root, 0);
+        FILE* output = stdout;
+        if (output_filename) {
+            output = fopen(output_filename, "w");
+            if (!output) {
+                perror("Error opening output file");
+                free_ast(root);
+                return 1;
+            }
+        }
+        
+        if (output_xml) {
+            fprintf(output, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+            fprintf(output, "<ast>\n");
+            print_ast_xml(root, 1, output);
+            fprintf(output, "</ast>\n");
+        } else {
+            printf("Abstract Syntax Tree:\n");
+            print_ast(root, 0);
+        }
+        
+        if (output_filename) {
+            fclose(output);
+        }
+        
         free_ast(root);
     }
     

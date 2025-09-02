@@ -9,6 +9,24 @@ ASTNode* create_node(NodeType type, const char* value) {
     return node;
 }
 
+void free_ast(ASTNode* node) {
+    if (!node) return;
+    
+    if (node->value) {
+        free(node->value);
+    }
+    
+    for (int i = 0; i < node->children_count; i++) {
+        free_ast(node->children[i]);
+    }
+    
+    if (node->children) {
+        free(node->children);
+    }
+    
+    free(node);
+}
+
 void add_child(ASTNode* parent, ASTNode* child) {
     parent->children_count++;
     parent->children = (ASTNode**)realloc(parent->children, 
@@ -42,7 +60,98 @@ const char* node_type_to_string(NodeType type) {
     }
 }
 
+char* xml_escape(const char* input) {
+    if (!input) return NULL;
+    
+    size_t len = strlen(input);
+    // Calcula o tamanho necessário
+    size_t new_len = len;
+    for (size_t i = 0; i < len; i++) {
+        switch (input[i]) {
+            case '&': new_len += 4; break;  // &amp;
+            case '<': new_len += 3; break;  // &lt;
+            case '>': new_len += 3; break;  // &gt;
+            case '"': new_len += 5; break;  // &quot;
+            case '\'': new_len += 5; break; // &apos;
+        }
+    }
+    
+    if (new_len == len) return strdup(input);
+    
+    char* output = malloc(new_len + 1);
+    size_t j = 0;
+    for (size_t i = 0; i < len; i++) {
+        switch (input[i]) {
+            case '&':
+                strcpy(output + j, "&amp;");
+                j += 5;
+                break;
+            case '<':
+                strcpy(output + j, "&lt;");
+                j += 4;
+                break;
+            case '>':
+                strcpy(output + j, "&gt;");
+                j += 4;
+                break;
+            case '"':
+                strcpy(output + j, "&quot;");
+                j += 6;
+                break;
+            case '\'':
+                strcpy(output + j, "&apos;");
+                j += 6;
+                break;
+            default:
+                output[j++] = input[i];
+        }
+    }
+    output[j] = '\0';
+    return output;
+}
+
+void print_ast_xml(ASTNode* node, int depth, FILE* output) {
+    if (!node) return;
+    
+    // indentação
+    for (int i = 0; i < depth; i++) {
+        fprintf(output, "  ");
+    }
+    
+    // tag de abertura
+    fprintf(output, "<%s", node_type_to_string(node->type));
+    
+    // valor como atributo, se existir
+    if (node->value && strlen(node->value) > 0) {
+        char* escaped_value = xml_escape(node->value);
+        fprintf(output, " value=\"%s\"", escaped_value);
+        free(escaped_value);
+    }
+    
+    if (node->children_count == 0) {
+        // elemento vazio
+        fprintf(output, "/>\n");
+    } else {
+        // elemento com filhos
+        fprintf(output, ">\n");
+        
+        // filhos
+        for (int i = 0; i < node->children_count; i++) {
+            print_ast_xml(node->children[i], depth + 1, output);
+        }
+        
+        // indentação para tag de fechamento
+        for (int i = 0; i < depth; i++) {
+            fprintf(output, "  ");
+        }
+        
+        // tag de fechamento
+        fprintf(output, "</%s>\n", node_type_to_string(node->type));
+    }
+}
+
 void print_ast(ASTNode* node, int depth) {
+    /*
     if (!node) return;
     
     for (int i = 0; i < depth; i++) {
@@ -58,22 +167,6 @@ void print_ast(ASTNode* node, int depth) {
     for (int i = 0; i < node->children_count; i++) {
         print_ast(node->children[i], depth + 1);
     }
-}
-
-void free_ast(ASTNode* node) {
-    if (!node) return;
-    
-    if (node->value) {
-        free(node->value);
-    }
-    
-    for (int i = 0; i < node->children_count; i++) {
-        free_ast(node->children[i]);
-    }
-    
-    if (node->children) {
-        free(node->children);
-    }
-    
-    free(node);
+    */
+    print_ast_xml(node, depth, stdout);
 }

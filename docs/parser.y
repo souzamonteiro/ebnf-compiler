@@ -11,6 +11,8 @@ int yylex(void);
 ASTNode* root;
 int in_tokens_section = 0;
 
+int output_xml = 0;
+char* output_filename = NULL;
 %}
 
 %union {
@@ -212,13 +214,19 @@ void yyerror(const char *s) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc > 1) {
-        FILE *file = fopen(argv[1], "r");
-        if (!file) {
-            perror("Error opening file");
-            return 1;
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-xml") == 0) {
+            output_xml = 1;
+        } else if (strcmp(argv[i], "-o") == 0 && i + 1 < argc) {
+            output_filename = argv[++i];
+        } else {
+            FILE *file = fopen(argv[i], "r");
+            if (!file) {
+                perror("Error opening file");
+                return 1;
+            }
+            yyin = file;
         }
-        yyin = file;
     }
     
     in_tokens_section = 0;
@@ -226,8 +234,30 @@ int main(int argc, char *argv[]) {
     yyparse();
     
     if (root) {
-        printf("Abstract Syntax Tree:\n");
-        print_ast(root, 0);
+        FILE* output = stdout;
+        if (output_filename) {
+            output = fopen(output_filename, "w");
+            if (!output) {
+                perror("Error opening output file");
+                free_ast(root);
+                return 1;
+            }
+        }
+        
+        if (output_xml) {
+            fprintf(output, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+            fprintf(output, "<ast>\n");
+            print_ast_xml(root, 1, output);
+            fprintf(output, "</ast>\n");
+        } else {
+            printf("Abstract Syntax Tree:\n");
+            print_ast(root, 0);
+        }
+        
+        if (output_filename) {
+            fclose(output);
+        }
+        
         free_ast(root);
     }
     

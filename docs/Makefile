@@ -21,4 +21,7 @@ clean:
 	rm -f *.o parser.tab.c parser.tab.h lex.yy.c parser
 
 test: parser
-	./parser test_input.ebnf
+	./parser test.ebnf
+
+test-xml: parser
+	./parser -xml test.ebnf -o output.xml

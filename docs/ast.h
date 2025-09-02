@@ -36,8 +36,11 @@ typedef struct ASTNode {
 } ASTNode;
 
 ASTNode* create_node(NodeType type, const char* value);
-void add_child(ASTNode* parent, ASTNode* child);
-void print_ast(ASTNode* node, int depth);
 void free_ast(ASTNode* node);
+void add_child(ASTNode* parent, ASTNode* child);
+const char* node_type_to_string(NodeType type);
+char* xml_escape(const char* input);
+void print_ast_xml(ASTNode* node, int depth, FILE* output);
+void print_ast(ASTNode* node, int depth);
 
 #endif
