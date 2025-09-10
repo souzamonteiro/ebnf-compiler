@@ -10,9 +10,13 @@ factor     = [ integer, "*" ], primary ;
 
 primary    = identifier
            | terminal
-           | "(", expression, ")"
-           | "[", expression, "]"
-           | "{", expression, "}" ;
+           | optional
+           | repetition
+           | group
+
+optional   = "[", expression, "]"
+repetition = "{", expression, "}" ;
+group      = "(", expression, ")"
 
 identifier = letter, { letter | digit } ;
 
