@@ -35,13 +35,14 @@ whitespace
 
 identifier ::= letter (letter | digit | "_")*
 
-terminal ::= '"' terminal_character* '"'
+terminal ::= single_quote_terminal_string | double_quote_terminal_string
+single_quote_terminal_string  ::= "'" single_quote_terminal_character* "'"
+double_quote_terminal_string  ::= '"' double_quote_terminal_character* '"'
 
-terminal_character ::= (character - '"') | whitespace
+single_quote_terminal_character ::= (character - "'") | whitespace
+double_quote_terminal_character ::= (character - '"') | whitespace
 
-character ::= [#x21-#xD7FF]
-            | [#xE000-#xFFFD]
-            | [#x10000-#x10FFFF]
+character ::= [#x0-#xFFFF] - [#x9#xA#xD#x20]
 
 integer ::= digit digit*
 
@@ -58,7 +59,9 @@ digit ::= "0" | "1" | "2" | "3" | "4"
         | "5" | "6" | "7" | "8" | "9" 
 
 hex_number ::= "#" hex_char*
-hex_char ::= digit | "A" | "B" | "C" | "D" | "E" | "F"
+hex_char ::= digit
+           | "A" | "B" | "C" | "D" | "E" | "F"
+           | "a" | "b" | "c" | "d" | "e" | "f"
 
 whitespace ::= [#x9#xA#xD#x20]+ 
 
