@@ -1,4 +1,4 @@
-// This file was generated on Wed Sep 17, 2025 16:30 (UTC-03) by REx v6.1 which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Wed Sep 17, 2025 19:38 (UTC-03) by REx v6.1 which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: ISO_EBNF_EXT.ebnf -cpp -tree -main
 
 #include <string.h>
@@ -400,6 +400,7 @@ public:
   {
             b0 = b; e0 = b;
     l1 = l; b1 = b; e1 = e;
+    l2 = 0; b2 = 0; e2 = 0;
     end = e;
     eventHandler->reset(input);
   }
@@ -549,30 +550,58 @@ private:
     eventHandler->startNonterminal(L"rule", e0);
     consume(1);                     // identifier
     lookahead1W(3);                 // whitespace^token | '='
-    consume(17);                    // '='
-    lookahead1W(9);                 // identifier | terminal | integer | hex_number | whitespace^token | '(' | '[' | '{'
+    consume(18);                    // '='
+    lookahead1W(8);                 // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
+                                    // '[' | '{'
     whitespace();
     parse_expression();
-    consume(16);                    // ';'
+    consume(17);                    // ';'
     eventHandler->endNonterminal(L"rule", e0);
   }
 
   void parse_expression()
   {
     eventHandler->startNonterminal(L"expression", e0);
-    parse_term();
+    parse_exception();
+    eventHandler->endNonterminal(L"expression", e0);
+  }
+
+  void parse_exception()
+  {
+    eventHandler->startNonterminal(L"exception", e0);
+    parse_choice();
     for (;;)
     {
-      if (l1 != 21)                 // '|'
+      if (l1 != 15)                 // '-'
       {
         break;
       }
-      consume(21);                  // '|'
-      lookahead1W(9);               // identifier | terminal | integer | hex_number | whitespace^token | '(' | '[' | '{'
+      consume(15);                  // '-'
+      lookahead1W(8);               // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
+                                    // '[' | '{'
+      whitespace();
+      parse_choice();
+    }
+    eventHandler->endNonterminal(L"exception", e0);
+  }
+
+  void parse_choice()
+  {
+    eventHandler->startNonterminal(L"choice", e0);
+    parse_term();
+    for (;;)
+    {
+      if (l1 != 22)                 // '|'
+      {
+        break;
+      }
+      consume(22);                  // '|'
+      lookahead1W(8);               // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
+                                    // '[' | '{'
       whitespace();
       parse_term();
     }
-    eventHandler->endNonterminal(L"expression", e0);
+    eventHandler->endNonterminal(L"choice", e0);
   }
 
   void parse_term()
@@ -581,13 +610,14 @@ private:
     parse_factor();
     for (;;)
     {
-      lookahead1W(8);               // whitespace^token | ')' | ',' | ';' | ']' | '|' | '}'
+      lookahead1W(9);               // whitespace^token | ')' | ',' | '-' | ';' | ']' | '|' | '}'
       if (l1 != 14)                 // ','
       {
         break;
       }
       consume(14);                  // ','
-      lookahead1W(9);               // identifier | terminal | integer | hex_number | whitespace^token | '(' | '[' | '{'
+      lookahead1W(8);               // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
+                                    // '[' | '{'
       whitespace();
       parse_factor();
     }
@@ -603,7 +633,7 @@ private:
       lookahead1W(1);               // whitespace^token | '*'
       consume(12);                  // '*'
     }
-    lookahead1W(7);                 // identifier | terminal | hex_number | whitespace^token | '(' | '[' | '{'
+    lookahead1W(7);                 // identifier | terminal | hexadecimal_number | whitespace^token | '(' | '[' | '{'
     whitespace();
     parse_primary();
     eventHandler->endNonterminal(L"factor", e0);
@@ -620,17 +650,17 @@ private:
     case 2:                         // terminal
       consume(2);                   // terminal
       break;
-    case 18:                        // '['
+    case 19:                        // '['
       parse_optional();
       break;
-    case 20:                        // '{'
+    case 21:                        // '{'
       parse_repetition();
       break;
     case 9:                         // '('
       parse_group();
       break;
     default:
-      parse_char_range();
+      parse_character_definition();
       break;
     }
     eventHandler->endNonterminal(L"primary", e0);
@@ -639,22 +669,24 @@ private:
   void parse_optional()
   {
     eventHandler->startNonterminal(L"optional", e0);
-    consume(18);                    // '['
-    lookahead1W(9);                 // identifier | terminal | integer | hex_number | whitespace^token | '(' | '[' | '{'
+    consume(19);                    // '['
+    lookahead1W(8);                 // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
+                                    // '[' | '{'
     whitespace();
     parse_expression();
-    consume(19);                    // ']'
+    consume(20);                    // ']'
     eventHandler->endNonterminal(L"optional", e0);
   }
 
   void parse_repetition()
   {
     eventHandler->startNonterminal(L"repetition", e0);
-    consume(20);                    // '{'
-    lookahead1W(9);                 // identifier | terminal | integer | hex_number | whitespace^token | '(' | '[' | '{'
+    consume(21);                    // '{'
+    lookahead1W(8);                 // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
+                                    // '[' | '{'
     whitespace();
     parse_expression();
-    consume(22);                    // '}'
+    consume(23);                    // '}'
     eventHandler->endNonterminal(L"repetition", e0);
   }
 
@@ -662,22 +694,47 @@ private:
   {
     eventHandler->startNonterminal(L"group", e0);
     consume(9);                     // '('
-    lookahead1W(9);                 // identifier | terminal | integer | hex_number | whitespace^token | '(' | '[' | '{'
+    lookahead1W(8);                 // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
+                                    // '[' | '{'
     whitespace();
     parse_expression();
     consume(11);                    // ')'
     eventHandler->endNonterminal(L"group", e0);
   }
 
-  void parse_char_range()
+  void parse_character_definition()
   {
-    eventHandler->startNonterminal(L"char_range", e0);
-    consume(5);                     // hex_number
+    eventHandler->startNonterminal(L"character_definition", e0);
+    switch (l1)
+    {
+    case 5:                         // hexadecimal_number
+      lookahead2W(10);              // whitespace^token | ')' | ',' | '-' | '..' | ';' | ']' | '|' | '}'
+      break;
+    default:
+      lk = l1;
+      break;
+    }
+    switch (lk)
+    {
+    case 517:                       // hexadecimal_number '..'
+      parse_character_range();
+      break;
+    default:
+      consume(5);                   // hexadecimal_number
+      break;
+    }
+    eventHandler->endNonterminal(L"character_definition", e0);
+  }
+
+  void parse_character_range()
+  {
+    eventHandler->startNonterminal(L"character_range", e0);
+    consume(5);                     // hexadecimal_number
     lookahead1W(2);                 // whitespace^token | '..'
-    consume(15);                    // '..'
-    lookahead1W(0);                 // hex_number | whitespace^token
-    consume(5);                     // hex_number
-    eventHandler->endNonterminal(L"char_range", e0);
+    consume(16);                    // '..'
+    lookahead1W(0);                 // hexadecimal_number | whitespace^token
+    consume(5);                     // hexadecimal_number
+    eventHandler->endNonterminal(L"character_range", e0);
   }
 
   void parse_comment()
@@ -745,7 +802,8 @@ private:
     {
       whitespace();
       eventHandler->terminal(TOKEN[l1], b1, e1);
-      b0 = b1; e0 = e1; l1 = 0;
+      b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
+      b1 = b2; e1 = e2; l2 = 0; }
     }
     else
     {
@@ -786,13 +844,25 @@ private:
     }
   }
 
+  void lookahead2W(int tokenSetId)
+  {
+    if (l2 == 0)
+    {
+      l2 = matchW(tokenSetId);
+      b2 = begin;
+      e2 = end;
+    }
+    lk = (l2 << 5) | l1;
+  }
+
   int error(int b, int e, int s, int l, int t)
   {
     throw ParseException(b, e, s, l, t);
   }
 
-  int     b0, e0;
+  int lk, b0, e0;
   int l1, b1, e1;
+  int l2, b2, e2;
   EventHandler *eventHandler;
 
   const wchar_t *input;
@@ -1083,7 +1153,7 @@ private:
   static void getTokenSet(int tokenSetId, const wchar_t **set, int size)
   {
     int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 31;
-    for (int i = 0; i < 23; i += 32)
+    for (int i = 0; i < 24; i += 32)
     {
       int j = i;
       for (unsigned int f = ec(i >> 5, s); f != 0; f >>= 1, ++j)
@@ -1107,7 +1177,7 @@ private:
 
   static int ec(int t, int s)
   {
-    int i0 = t * 26 + s - 1;
+    int i0 = t * 27 + s - 1;
     return EXPECTED[i0];
   }
 
@@ -1122,11 +1192,11 @@ private:
 
 const int ISO_EBNF_EXT::MAP0[] =
 {
-/*   0 */ 29, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 3, 4,
-/*  36 */ 1, 5, 1, 6, 7, 8, 9, 1, 10, 1, 11, 1, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 1, 13, 1, 14, 1, 1, 1, 15, 15,
-/*  67 */ 15, 15, 16, 15, 17, 17, 17, 17, 18, 17, 17, 19, 20, 17, 17, 17, 21, 22, 17, 17, 17, 17, 17, 17, 23, 1, 24, 1,
-/*  95 */ 25, 1, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17,
-/* 123 */ 26, 27, 28, 1, 1
+/*   0 */ 30, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 3, 4,
+/*  36 */ 1, 5, 1, 6, 7, 8, 9, 1, 10, 11, 12, 1, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 1, 14, 1, 15, 1, 1, 1, 16, 16,
+/*  67 */ 16, 16, 17, 16, 18, 18, 18, 18, 19, 18, 18, 20, 21, 18, 18, 18, 22, 23, 18, 18, 18, 18, 18, 18, 24, 1, 25, 1,
+/*  95 */ 26, 1, 16, 16, 16, 16, 16, 16, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18,
+/* 123 */ 27, 28, 29, 1, 1
 };
 
 const int ISO_EBNF_EXT::MAP1[] =
@@ -1134,12 +1204,12 @@ const int ISO_EBNF_EXT::MAP1[] =
 /*   0 */ 54, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
 /*  27 */ 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
 /*  54 */ 90, 136, 198, 167, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104,
-/*  76 */ 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 29, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1,
+/*  76 */ 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 30, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1,
 /* 103 */ 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 3, 4,
-/* 140 */ 1, 5, 1, 6, 7, 8, 9, 1, 10, 1, 11, 1, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 1, 13, 1, 14, 1, 1, 15, 15, 15,
-/* 171 */ 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 26, 27, 28, 1, 1,
-/* 199 */ 15, 15, 15, 15, 16, 15, 17, 17, 17, 17, 18, 17, 17, 19, 20, 17, 17, 17, 21, 22, 17, 17, 17, 17, 17, 17, 23, 1,
-/* 227 */ 24, 1, 25
+/* 140 */ 1, 5, 1, 6, 7, 8, 9, 1, 10, 11, 12, 1, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 1, 14, 1, 15, 1, 1, 16, 16, 16,
+/* 171 */ 16, 16, 16, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 27, 28, 29, 1, 1,
+/* 199 */ 16, 16, 16, 16, 17, 16, 18, 18, 18, 18, 19, 18, 18, 20, 21, 18, 18, 18, 22, 23, 18, 18, 18, 18, 18, 18, 24, 1,
+/* 227 */ 25, 1, 26
 };
 
 const int ISO_EBNF_EXT::MAP2[] =
@@ -1149,33 +1219,33 @@ const int ISO_EBNF_EXT::MAP2[] =
 
 const int ISO_EBNF_EXT::INITIAL[] =
 {
-/*  0 */ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+/*  0 */ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 };
 
 const int ISO_EBNF_EXT::TRANSITION[] =
 {
-/*   0 */ 241, 241, 241, 241, 241, 241, 241, 241, 241, 240, 241, 241, 309, 241, 241, 241, 246, 246, 247, 241, 309, 241,
-/*  22 */ 241, 241, 241, 251, 253, 241, 306, 241, 241, 241, 262, 259, 261, 241, 309, 241, 241, 241, 241, 267, 241, 241,
-/*  44 */ 309, 241, 322, 241, 241, 283, 285, 241, 270, 241, 241, 241, 241, 291, 303, 241, 309, 241, 241, 241, 241, 240,
-/*  66 */ 295, 331, 309, 241, 241, 241, 319, 300, 241, 287, 309, 241, 241, 241, 241, 240, 316, 241, 309, 241, 241, 241,
-/*  88 */ 255, 240, 241, 328, 309, 241, 241, 241, 241, 240, 334, 263, 312, 241, 241, 241, 241, 240, 338, 241, 309, 241,
-/* 110 */ 241, 241, 296, 240, 241, 241, 309, 241, 241, 241, 241, 342, 279, 263, 309, 241, 241, 241, 241, 342, 279, 263,
-/* 132 */ 309, 324, 241, 241, 241, 342, 276, 263, 309, 241, 241, 241, 241, 342, 276, 263, 309, 273, 241, 241, 241, 342,
-/* 154 */ 276, 263, 309, 242, 241, 241, 241, 342, 276, 263, 309, 346, 241, 241, 241, 342, 276, 263, 309, 241, 350, 241,
-/* 176 */ 241, 342, 276, 263, 354, 241, 241, 241, 241, 358, 360, 241, 309, 241, 241, 241, 241, 240, 364, 241, 309, 241,
-/* 198 */ 241, 241, 241, 240, 241, 263, 309, 241, 241, 241, 241, 368, 370, 241, 309, 241, 241, 241, 241, 240, 374, 241,
-/* 220 */ 309, 241, 241, 241, 241, 240, 378, 241, 309, 241, 241, 241, 241, 382, 241, 241, 309, 241, 241, 241, 128, 0, 0,
-/* 243 */ 0, 0, 25, 235, 235, 235, 235, 0, 128, 0, 0, 18, 0, 0, 13, 0, 128, 0, 0, 204, 0, 0, 0, 80, 128, 0, 17, 0, 18,
-/* 272 */ 96, 0, 23, 0, 0, 80, 0, 0, 80, 0, 204, 128, 0, 0, 19, 0, 0, 352, 0, 128, 15, 15, 320, 384, 0, 0, 0, 576, 142,
-/* 301 */ 0, 0, 0, 320, 0, 0, 96, 19, 0, 18, 19, 0, 18, 19, 180, 480, 0, 0, 0, 416, 0, 0, 288, 0, 0, 24, 0, 512, 0, 0,
-/* 331 */ 0, 448, 0, 0, 180, 0, 204, 544, 0, 0, 0, 128, 80, 80, 80, 22, 0, 0, 0, 26, 0, 0, 0, 21, 18, 19, 0, 128, 0, 0,
-/* 361 */ 608, 0, 0, 640, 0, 0, 0, 128, 0, 0, 672, 0, 0, 704, 0, 0, 0, 736, 0, 0, 0, 128, 256, 256, 0
+/*   0 */ 249, 249, 249, 249, 249, 249, 249, 249, 249, 248, 249, 249, 259, 249, 249, 249, 254, 254, 254, 249, 259, 249,
+/*  22 */ 249, 249, 249, 258, 263, 249, 314, 249, 249, 249, 271, 268, 271, 249, 259, 249, 249, 249, 249, 276, 249, 249,
+/*  44 */ 259, 249, 345, 249, 249, 294, 297, 249, 308, 249, 249, 249, 249, 303, 306, 249, 259, 249, 249, 249, 249, 248,
+/*  66 */ 285, 320, 259, 249, 249, 249, 288, 312, 249, 264, 259, 249, 249, 249, 249, 248, 337, 249, 259, 249, 249, 249,
+/*  88 */ 249, 248, 340, 249, 259, 249, 249, 249, 299, 248, 299, 343, 259, 249, 249, 249, 249, 248, 318, 271, 324, 318,
+/* 110 */ 249, 249, 249, 248, 334, 249, 259, 249, 249, 249, 272, 248, 249, 249, 259, 249, 249, 249, 249, 328, 331, 271,
+/* 132 */ 324, 249, 249, 249, 249, 328, 331, 271, 324, 250, 249, 249, 249, 328, 331, 249, 324, 249, 249, 249, 249, 328,
+/* 154 */ 331, 249, 324, 290, 249, 249, 249, 328, 331, 249, 324, 249, 349, 249, 249, 328, 331, 249, 324, 279, 249, 249,
+/* 176 */ 249, 328, 331, 249, 324, 249, 282, 249, 249, 328, 331, 249, 362, 249, 249, 249, 249, 366, 369, 249, 259, 249,
+/* 198 */ 249, 249, 249, 248, 352, 249, 259, 249, 249, 249, 249, 248, 249, 249, 324, 249, 249, 249, 249, 373, 376, 249,
+/* 220 */ 259, 249, 249, 249, 249, 248, 355, 249, 259, 249, 249, 249, 249, 248, 358, 249, 259, 249, 249, 249, 249, 380,
+/* 242 */ 249, 249, 259, 249, 249, 249, 128, 0, 0, 0, 0, 25, 236, 236, 236, 236, 128, 0, 0, 19, 20, 19, 0, 0, 0, 352,
+/* 268 */ 128, 0, 0, 205, 0, 0, 0, 608, 128, 0, 18, 0, 23, 0, 0, 27, 0, 0, 384, 384, 0, 416, 0, 0, 24, 0, 128, 0, 0, 20,
+/* 298 */ 0, 0, 0, 14, 0, 128, 16, 16, 320, 0, 0, 0, 19, 96, 143, 0, 0, 0, 96, 20, 181, 0, 0, 0, 448, 0, 81, 0, 19, 20,
+/* 328 */ 128, 81, 81, 81, 0, 0, 0, 576, 576, 0, 480, 480, 0, 512, 512, 0, 544, 0, 0, 288, 0, 26, 0, 0, 0, 672, 672, 0,
+/* 356 */ 736, 736, 0, 768, 768, 0, 81, 22, 19, 20, 128, 0, 0, 640, 0, 0, 0, 128, 0, 0, 704, 0, 0, 0, 128, 256, 256, 0
 };
 
 const int ISO_EBNF_EXT::EXPECTED[] =
 {
-/*  0 */ 96, 4160, 32832, 131136, 8264, 1218, 1474, 1311334, 6899776, 1311350, 64, 32, 32768, 8192, 1024, 2, 256, 4, 4,
-/* 19 */ 16, 256, 256, 256, 256, 256, 256
+/*  0 */ 96, 4160, 65600, 262208, 8264, 1218, 1474, 2622054, 2622070, 13813824, 13879360, 64, 32, 65536, 8192, 1024, 2,
+/* 17 */ 256, 4, 4, 16, 256, 256, 256, 256, 256, 256
 };
 
 const wchar_t *ISO_EBNF_EXT::TOKEN[] =
@@ -1185,7 +1255,7 @@ const wchar_t *ISO_EBNF_EXT::TOKEN[] =
   L"terminal",
   L"character",
   L"integer",
-  L"hex_number",
+  L"hexadecimal_number",
   L"whitespace",
   L"EOF",
   L"'%TOKENS%'",
@@ -1195,6 +1265,7 @@ const wchar_t *ISO_EBNF_EXT::TOKEN[] =
   L"'*'",
   L"'*)'",
   L"','",
+  L"'-'",
   L"'..'",
   L"';'",
   L"'='",

@@ -1,28 +1,43 @@
-syntax     = { rule | comment } ;
+syntax = { rule | comment } ;
 
-rule       = identifier, "=", expression, ";" ;
+rule = identifier, "=", expression, ";" ;
 
-expression = term, { "|", term } ;
+expression  = exception ;
+exception = choice, {"-", choice } ;
+choice = term, { "|", term } ;
+term = factor, { ",", factor } ;
+factor = { integer, "*" }, primary ;
 
-term       = factor, { ",", factor } ;
+primary = identifier
+        | terminal
+        | optional
+        | repetition
+        | group 
+        | character_definition ;
 
-factor     = [ integer, "*" ], primary ;
-
-primary    = identifier
-           | terminal
-           | optional
-           | repetition
-           | group ;
-
-optional   = "[", expression, "]" ;
+optional = "[", expression, "]" ;
 repetition = "{", expression, "}" ;
-group      = "(", expression, ")" ;
+group = "(", expression, ")" ;
+
+character_definition = hexadecimal_number | character_range ;
+character_range = hexadecimal_number, "..", hexadecimal_number ;
+
+comment = "(*", { character | space  }, "*)" ;
+
+lexical_definition = "%TOKENS%", { rule | comment } ;
+
+%TOKENS%
 
 identifier = letter, { letter | digit } ;
 
-terminal   = "'", character, { character }, "'" ;
+terminal = single_quote_terminal_string | double_quote_terminal_string ;
+single_quote_terminal_string  = "'", { single_quote_terminal_character }, "'" ;
+double_quote_terminal_string  = '"', { double_quote_terminal_character }, '"' ;
 
-character  = letter | digit ;
+single_quote_terminal_character = character - #27 | whitespace ;
+double_quote_terminal_character = character - #22 | whitespace ;
+
+character  =  #0 .. #FFFF - #9 - #A - #D - #20 ;
 
 integer    = digit, { digit } ;
 
@@ -38,6 +53,9 @@ letter     = "A" | "B" | "C" | "D" | "E" | "F" | "G"
 digit      = "0" | "1" | "2" | "3" | "4"
            | "5" | "6" | "7" | "8" | "9" ;
 
-comment    = "(*", { character | space }, "*)" ;
+hexadecimal_number = "#", { hexadecimal_character } ;
+hexadecimal_character = digit
+                      | "A" | "B" | "C" | "D" | "E" | "F"
+                      | "a" | "b" | "c" | "d" | "e" | "f" ;
 
-space      = " " | "\t" | "\n" | "\r" ;
+whitespace =  #9 | #A | #D | #20 ;
