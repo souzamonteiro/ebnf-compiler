@@ -12,16 +12,15 @@ primary    = identifier
            | terminal
            | optional
            | repetition
-           | group
+           | group ;
 
-optional   = "[", expression, "]"
+optional   = "[", expression, "]" ;
 repetition = "{", expression, "}" ;
-group      = "(", expression, ")"
+group      = "(", expression, ")" ;
 
 identifier = letter, { letter | digit } ;
 
-terminal   = '"', character, { character }, '"'
-           | "'", character, { character }, "'" ;
+terminal   = "'", character, { character }, "'" ;
 
 character  = letter | digit ;
 

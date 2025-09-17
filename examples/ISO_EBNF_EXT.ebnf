@@ -1,6 +1,6 @@
-grammar::= syntax_definition | lexical_definition
+grammar::= syntax_definition lexical_definition? EOF
 
-syntax_definition ::= (rule | comment | space)*
+syntax_definition ::= (rule | comment)*
 
 rule ::= identifier "=" expression ";"
 
@@ -17,26 +17,31 @@ primary ::= identifier
           | group
           | char_range
 
-identifier ::= letter (letter | digit | "_")*
-
-terminal ::= '"' character+ '"'
-           | "'" character+ "'" 
-
 optional   ::= "[" expression "]"
 repetition ::= "{" expression "}"
 group      ::= "(" expression ")"
 
 char_range ::= hex_number ".." hex_number
 
-lexical_definition ::= "%TOKENS%" (rule | comment | space)*
+comment ::= "(*" (character | whitespace)* "*)" 
+
+lexical_definition ::= "%TOKENS%" (rule | comment)*
+
+whitespace
+         ::= whitespace^token
+          /* ws: definition */
 
 <?TOKENS?>
 
-hex_number ::= "#" hex_char*
+identifier ::= letter (letter | digit | "_")*
 
-hex_char ::= digit | "A" | "B" | "C" | "D" | "E" | "F"
+terminal ::= '"' terminal_character* '"'
 
-character ::= [#x0-#xFFFFF] - ("'" | '"')
+terminal_character ::= (character - '"') | whitespace
+
+character ::= [#x21-#xD7FF]
+            | [#xE000-#xFFFD]
+            | [#x10000-#x10FFFF]
 
 integer ::= digit digit*
 
@@ -52,8 +57,9 @@ letter ::= "A" | "B" | "C" | "D" | "E" | "F" | "G"
 digit ::= "0" | "1" | "2" | "3" | "4"
         | "5" | "6" | "7" | "8" | "9" 
 
-comment ::= "(*" (character | space)* "*)" 
+hex_number ::= "#" hex_char*
+hex_char ::= digit | "A" | "B" | "C" | "D" | "E" | "F"
 
-space ::= " " | "\t" | "\n" | "\r" 
+whitespace ::= [#x9#xA#xD#x20]+ 
 
 EOF ::= $
