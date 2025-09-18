@@ -7,183 +7,133 @@ This document describes an extended EBNF (Extended Backus-Naur Form) grammar tha
 
 ### Syntax Rule
 ```
-syntax = { (rule | comment | directive | space) } ;
+syntax_definition = { syntax_rule | comment } ;
 ```
-The overall syntax consists of zero or more repetitions of rules, comments, directives, or whitespace.
+The overall syntax consists of zero or more repetitions of syntax rules, comments, directives, or whitespace.
 
 ## Rule Definitions
 
 ### Rule Structure
 ```
-rule = identifier, spaces, equals, spaces, expression, spaces, semicolon ;
+syntax_rule = metaa_identifier, "=", definition_list, ";" ;
 ```
 Each rule consists of:
 - An identifier
 - An equals sign
-- An expression
+- An definition list
 - A terminating semicolon
 
-### Expressions and Terms
+### Definition List and Terms
 ```
-expression = term, { spaces, pipe, spaces, term } ;
-term       = factor, { spaces, comma, spaces, factor } ;
+definition_list = single_definition, { "|", single_definition } ;
+single_definition = term ,{ ",", term } ;
+term = factor, { "-", exception } ;
 ```
-- Expressions are sequences of terms separated by pipes (|) representing alternatives
+- Definition list are sequences of terms separated by pipes (|) representing alternatives
 - Terms are sequences of factors separated by commas representing concatenation
 
 ### Factors and Quantifiers
 ```
-factor = [ integer, asterisk | quantifier ], primary ;
-quantifier = asterisk | plus | question | l_brace, spaces, integer, [ comma, spaces, [ integer ] ], spaces, r_brace ;
+exception = factor ;
+factor = [ integer, "*" ], primary ;
 ```
 Factors can include:
 - Optional repetition count (integer followed by asterisk)
-- Quantifiers: *, +, ?, or {n,m} range notation
 - A primary element
 
 ### Primary Elements
 ```
-primary = identifier
-        | terminal
-        | optional
-        | repeat
-        | group
-        | special_sequence
-        | char_range
-        | hex_char ;
+primary = metaa_identifier
+        | terminal_string
+        | optional_sequence
+        | repeted_sequence
+        | grouped_sequence
+        | character_definition ;
 ```
 Primary elements can be:
-- Identifiers (references to other rules)
+- Meta identifiers (references to other rules)
 - Terminal strings (quoted)
-- Optional expressions [...]
-- Repeat expressions {...}
-- Group expressions (...)
-- Special sequences ?...?
-- Character ranges #xx..#yy
+- Optional sequences [...]
+- Repeated sequences {...}
+- Grouped sequences (...)
+- Character ranges #xx .. #yy
 - Hexadecimal characters #xx
 
 ### Structural Elements
 ```
-optional = l_bracket, spaces, expression, spaces, r_bracket ;
-repeat   = l_brace, spaces, expression, spaces, r_brace ;
-group    = l_paren, spaces, expression, spaces, r_paren ;
+optional_sequence = "[", definition_list, "]" ;
+repeted_sequence = "{", definition_list, "}" ;
+grouped_sequence = "(", definition_list, ")" ;
 ```
-- Optional: [expression]
-- Repeat: {expression} 
-- Group: (expression)
-
-### Special Sequences
-```
-special_sequence = question, { character_set }, question ;
-character_set = character_element, { spaces, minus, spaces, character_element } ;
-character_element = character | question ;
-```
-Special sequences are enclosed in question marks and can contain character sets with ranges.
+- Optional sequences: [definition list]
+- Repeated sequence: {definition list} 
+- Grouped sequence: (definition list)
 
 ### Directives
-```
-directive = percent, identifier, [ l_paren, literal, r_paren ], percent ;
-```
-Directives are enclosed in percent signs and can include an optional parameter in parentheses.
+Directives are enclosed in percent signs and are interpreted by the compiler.
 
 ## Token Definitions
 
-### Literals
+### Terminal Strings
 ```
-literal = string | identifier | integer | hex_char ;
-```
-Literals can be strings, identifiers, integers, or hexadecimal characters.
+terminal_string = single_quote_terminal_string | double_quote_terminal_string ;
+single_quote_terminal_string = "'", { single_quote_terminal_character }, "'" ;
+double_quote_terminal_string = '"', { double_quote_terminal_character }, '"' ;
 
-### Identifiers
+single_quote_terminal_character = character - #27 | whitespace ;
+double_quote_terminal_character = character - #22 | whitespace ;
 ```
-identifier = (letter | "_"), { letter | digit | "_" } ;
-```
-Identifiers start with a letter or underscore, followed by letters, digits, or underscores.
+Terminal strings can be single quoted strings or double quoted strings.
 
-### Terminals and Strings
+### Meta Identifiers
 ```
-terminal = '"' , { string_char }, '"' 
-         | "'" , { string_char }, "'" ;
-
-string_char = character - ('"' | "'") 
-            | escape_sequence
-            | unicode_escape ;
-
-escape_sequence = "\\", ( "\\" | "'" | '"' | "n" | "t" | "r" | "b" | "f" ) ;
-unicode_escape  = "\u", hex_digit, hex_digit, hex_digit, hex_digit ;
+metaa_identifier = letter, { letter | decimal_digit | "_" } ;
 ```
-Strings can be enclosed in single or double quotes and support:
-- Standard escape sequences: \\, \', \", \n, \t, \r, \b, \f
-- Unicode escape sequences: \uXXXX
+Meta identifiers start with a letter, followed by letters, digits, or underscores.
 
 ### Comments
 ```
-comment       = block_comment | line_comment ;
-block_comment = "(*", { comment_char | block_comment }, "*)" ;
-line_comment  = "//", { character - (#0A | #0D) }, ( #0A | #0D ) ;
-
-comment_char  = character - "*" | "*", character - ")" ;
+comment = "(*", { character | space  }, "*)" ;
 ```
 - Block comments: (* nested comments supported *)
-- Line comments: // until end of line
 
 ### Character Definitions
 ```
-character = ascii | unicode ;
-ascii     = #00 .. #7F ;
-unicode   = #80 .. #FF
-          | #0100 .. #FFFF
-          | #010000 .. #10FFFF ;
+character_definition = hexadecimal_number | character_range ;
+character_range = hexadecimal_number, "..", hexadecimal_number ;
+
+decimal_digit = "0" | "1" | "2" | "3" | "4"
+              | "5" | "6" | "7" | "8" | "9" ;
+
+hexadecimal_number = "#", { hexadecimal_character } ;
+hexadecimal_character = decimal_digit
+                      | "A" | "B" | "C" | "D" | "E" | "F"
+                      | "a" | "b" | "c" | "d" | "e" | "f" ;
 ```
 Characters are defined using hexadecimal ranges covering:
-- ASCII: #00 to #7F
-- Unicode: #80 to #10FFFFFF (full Unicode range)
+- ASCII: #0 to #7F
+- Unicode: #0 .. #FFFF
 
 ### Numeric Values
 ```
-integer = digit, { digit } ;
-hex_char = hash, { hex_digit } ;
-char_range = hex_char, spaces, dot_dot, spaces, hex_char ;
-hex_digit  = "0" .. "9" | "A" .. "F" | "a" .. "f" ;
+integer = decimal_digit, { decimal_digit } ;
+
+decimal_digit = "0" | "1" | "2" | "3" | "4"
+              | "5" | "6" | "7" | "8" | "9" ;
 ```
 - Integers: decimal digits
-- Hexadecimal characters: # followed by hex digits
-- Character ranges: #xx..#yy
-- Hex digits: 0-9, A-F, a-f
 
 ### Whitespace
 ```
-spaces = space, { space } ;
-space  = #20 | #09 | #0A | #0D ;
+whitespace = #9 | #A | #D | #20 ;
 ```
 Whitespace includes spaces, tabs, and newlines.
-
-## Terminal Symbols
-```
-equals     = "=" ;
-semicolon  = ";" ;
-pipe       = "|" ;
-comma      = "," ;
-asterisk   = "*" ;
-plus       = "+" ;
-question   = "?" ;
-minus      = "-" ;
-l_bracket  = "[" ;
-r_bracket  = "]" ;
-l_brace    = "{" ;
-r_brace    = "}" ;
-l_paren    = "(" ;
-r_paren    = ")" ;
-dot_dot    = ".." ;
-hash       = "#" ;
-percent    = "%" ;
-```
 
 ## Key Features
 
 1. **Directives**: Special constructs enclosed in % symbols
 2. **Hexadecimal Support**: Character definitions using # notation
-3. **Character Ranges**: Support for ranges like #00..#FF
+3. **Character Ranges**: Support for ranges like #00 .. #FF
 4. **Unicode Support**: Full Unicode character set support
 5. **Nested Comments**: Support for nested block comments
 6. **Escape Sequences**: Comprehensive escape sequence support
@@ -191,97 +141,67 @@ percent    = "%" ;
 
 ## Example Usage
 ```
-%RULES%
+grammar = syntax_definition, [ lexical_definition ] ;
 
-syntax = { (rule | comment | directive | space) } ;
+syntax_definition = { syntax_rule | comment } ;
 
-rule = identifier, spaces, equals, spaces, expression, spaces, semicolon ;
+syntax_rule = metaa_identifier, "=", definition_list, ";" ;
 
-expression = term, { spaces, pipe, spaces, term } ;
-term       = factor, { spaces, comma, spaces, factor } ;
+definition_list = single_definition, { "|", single_definition } ;
+single_definition = term ,{ ",", term } ;
+term = factor, { "-", exception } ;
+exception = factor ;
+factor = [ integer, "*" ], primary ;
 
-factor = [ integer, asterisk | quantifier ], primary ;
+primary = metaa_identifier
+        | terminal_string
+        | optional_sequence
+        | repeted_sequence
+        | grouped_sequence
+        | character_definition ;
 
-quantifier = asterisk 
-           | plus 
-           | question 
-           | l_brace, spaces, integer, [ comma, spaces, [ integer ] ], spaces, r_brace ;
+optional_sequence = "[", definition_list, "]" ;
+repeted_sequence = "{", definition_list, "}" ;
+grouped_sequence = "(", definition_list, ")" ;
 
-primary = identifier
-        | terminal
-        | optional
-        | repeat
-        | group
-        | special_sequence
-        | char_range
-        | hex_char ;
+character_definition = hexadecimal_number | character_range ;
+character_range = hexadecimal_number, "..", hexadecimal_number ;
 
-optional = l_bracket, spaces, expression, spaces, r_bracket ;
-repeat   = l_brace, spaces, expression, spaces, r_brace ;
-group    = l_paren, spaces, expression, spaces, r_paren ;
+comment = "(*", { character | space  }, "*)" ;
 
-special_sequence = question, { character_set }, question ;
-
-character_set = character_element, { spaces, minus, spaces, character_element } ;
-character_element = character | question ;
-
-directive = percent, identifier, [ l_paren, literal, r_paren ], percent ;
+lexical_definition = "%TOKENS%", { syntax_rule | comment } ;
 
 %TOKENS%
 
-whitespace = space ;
+metaa_identifier = letter, { letter | decimal_digit | "_" } ;
 
-equals     = "=" ;
-semicolon  = ";" ;
-pipe       = "|" ;
-comma      = "," ;
-asterisk   = "*" ;
-plus       = "+" ;
-question   = "?" ;
-minus      = "-" ;
-l_bracket  = "[" ;
-r_bracket  = "]" ;
-l_brace    = "{" ;
-r_brace    = "}" ;
-l_paren    = "(" ;
-r_paren    = ")" ;
-dot_dot    = ".." ;
-hash       = "#" ;
-percent    = "%" ;
+terminal_string = single_quote_terminal_string | double_quote_terminal_string ;
+single_quote_terminal_string = "'", { single_quote_terminal_character }, "'" ;
+double_quote_terminal_string = '"', { double_quote_terminal_character }, '"' ;
 
-literal = string | identifier | integer | hex_char ;
+single_quote_terminal_character = character - #27 | whitespace ;
+double_quote_terminal_character = character - #22 | whitespace ;
 
-identifier = (letter | "_"), { letter | digit | "_" } ;
+character = #0 .. #FFFF - ( #9 | #A | #D | #20 ) ;
 
-terminal = '"' , { string_char }, '"' 
-         | "'" , { string_char }, "'" ;
+integer = decimal_digit, { decimal_digit } ;
 
-string_char = character - ('"' | "'") 
-            | escape_sequence
-            | unicode_escape ;
+letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+       | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+       | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+       | "V" | "W" | "X" | "Y" | "Z"
+       | "a" | "b" | "c" | "d" | "e" | "f" | "g"
+       | "h" | "i" | "j" | "k" | "l" | "m" | "n"
+       | "o" | "p" | "q" | "r" | "s" | "t" | "u"
+       | "v" | "w" | "x" | "y" | "z" ;
 
-escape_sequence = "\\", ( "\\" | "'" | '"' | "n" | "t" | "r" | "b" | "f" ) ;
-unicode_escape  = "\u", hex_digit, hex_digit, hex_digit, hex_digit ;
+decimal_digit = "0" | "1" | "2" | "3" | "4"
+              | "5" | "6" | "7" | "8" | "9" ;
 
-comment       = block_comment | line_comment ;
-block_comment = "(*", { comment_char | block_comment }, "*)" ;
-line_comment  = "//", { character - (#0A | #0D) }, ( #0A | #0D ) ;
+hexadecimal_number = "#", { hexadecimal_character } ;
+hexadecimal_character = decimal_digit
+                      | "A" | "B" | "C" | "D" | "E" | "F"
+                      | "a" | "b" | "c" | "d" | "e" | "f" ;
 
-comment_char  = character - "*" | "*", character - ")" ;
-
-character = ascii | unicode ;
-ascii     = #00 .. #7F ;
-unicode   = #80 .. #FF
-          | #0100 .. #FFFF
-          | #010000 .. #10FFFF ;
-
-integer = digit, { digit } ;
-letter  = "A" .. "Z" | "a" .. "z" ;
-digit   = "0" .. "9" ;
-hex_char = hash, { hex_digit } ;
-char_range = hex_char, spaces, dot_dot, spaces, hex_char ;
-hex_digit  = "0" .. "9" | "A" .. "F" | "a" .. "f" ;
-
-spaces = space, { space } ;
-space  = #20 | #09 | #0A | #0D ;
+whitespace = #9 | #A | #D | #20 ;
 ```

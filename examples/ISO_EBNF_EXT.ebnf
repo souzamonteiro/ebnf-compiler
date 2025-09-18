@@ -1,41 +1,41 @@
-grammar::= syntax_definition lexical_definition? EOF
+grammar ::= syntax_definition lexical_definition? EOF
 
-syntax_definition ::= (rule | comment)*
+syntax_definition ::= (syntax_rule | comment)*
 
-rule ::= identifier "=" expression ";"
+syntax_rule ::= metaa_identifier "=" definition_list ";"
 
-expression ::= exception
-exception ::= choice ("-" choice)*
-choice ::= term ("|" term)*
-term ::= factor ("," factor)*
+definition_list ::= single_definition ("|" single_definition)*
+single_definition ::= term ("," term)*
+term ::= factor ("-" exception)*
+exception ::= factor
 factor ::= (integer "*")? primary
 
-primary ::= identifier
-          | terminal
-          | optional
-          | repetition
-          | group
+primary ::= metaa_identifier
+          | terminal_string
+          | optional_sequence
+          | repeted_sequence
+          | grouped_sequence
           | character_definition
 
-optional ::= "[" expression "]"
-repetition ::= "{" expression "}"
-group ::= "(" expression ")"
+optional_sequence ::= "[" definition_list "]"
+repeted_sequence ::= "{" definition_list "}"
+grouped_sequence ::= "(" definition_list ")"
 
 character_definition ::= hexadecimal_number | character_range
 character_range ::= hexadecimal_number ".." hexadecimal_number
 
 comment ::= "(*" (character | whitespace)* "*)" 
 
-lexical_definition ::= "%TOKENS%" (rule | comment)*
+lexical_definition ::= "%TOKENS%" (syntax_rule | comment)*
 
 whitespace ::= whitespace^token
            /* ws: definition */
 
 <?TOKENS?>
 
-identifier ::= letter (letter | digit | "_")*
+metaa_identifier ::= letter (letter | decimal_digit | "_")*
 
-terminal ::= single_quote_terminal_string | double_quote_terminal_string
+terminal_string ::= single_quote_terminal_string | double_quote_terminal_string
 single_quote_terminal_string  ::= "'" single_quote_terminal_character* "'"
 double_quote_terminal_string  ::= '"' double_quote_terminal_character* '"'
 
@@ -44,7 +44,7 @@ double_quote_terminal_character ::= (character - '"') | whitespace
 
 character ::= [#x0-#xFFFF] - [#x9#xA#xD#x20]
 
-integer ::= digit digit*
+integer ::= decimal_digit decimal_digit*
 
 letter ::= "A" | "B" | "C" | "D" | "E" | "F" | "G"
          | "H" | "I" | "J" | "K" | "L" | "M" | "N"
@@ -55,11 +55,11 @@ letter ::= "A" | "B" | "C" | "D" | "E" | "F" | "G"
          | "o" | "p" | "q" | "r" | "s" | "t" | "u"
          | "v" | "w" | "x" | "y" | "z" 
 
-digit ::= "0" | "1" | "2" | "3" | "4"
-        | "5" | "6" | "7" | "8" | "9" 
+decimal_digit ::= "0" | "1" | "2" | "3" | "4"
+                | "5" | "6" | "7" | "8" | "9" 
 
 hexadecimal_number ::= "#" hexadecimal_character*
-hexadecimal_character ::= digit
+hexadecimal_character ::= decimal_digit
                         | "A" | "B" | "C" | "D" | "E" | "F"
                         | "a" | "b" | "c" | "d" | "e" | "f"
 

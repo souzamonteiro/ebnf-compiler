@@ -1,4 +1,4 @@
-// This file was generated on Wed Sep 17, 2025 19:38 (UTC-03) by REx v6.1 which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Sep 18, 2025 11:34 (UTC-03) by REx v6.1 which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: ISO_EBNF_EXT.ebnf -cpp -tree -main
 
 #include <string.h>
@@ -505,7 +505,7 @@ public:
   void parse_grammar()
   {
     eventHandler->startNonterminal(L"grammar", e0);
-    lookahead1W(6);                 // identifier | whitespace^token | EOF | '%TOKENS%' | '(*'
+    lookahead1W(6);                 // metaa_identifier | whitespace^token | EOF | '%TOKENS%' | '(*'
     whitespace();
     parse_syntax_definition();
     if (l1 == 8)                    // '%TOKENS%'
@@ -524,17 +524,17 @@ private:
     eventHandler->startNonterminal(L"syntax_definition", e0);
     for (;;)
     {
-      lookahead1W(6);               // identifier | whitespace^token | EOF | '%TOKENS%' | '(*'
-      if (l1 != 1                   // identifier
+      lookahead1W(6);               // metaa_identifier | whitespace^token | EOF | '%TOKENS%' | '(*'
+      if (l1 != 1                   // metaa_identifier
        && l1 != 10)                 // '(*'
       {
         break;
       }
       switch (l1)
       {
-      case 1:                       // identifier
+      case 1:                       // metaa_identifier
         whitespace();
-        parse_rule();
+        parse_syntax_rule();
         break;
       default:
         whitespace();
@@ -545,50 +545,24 @@ private:
     eventHandler->endNonterminal(L"syntax_definition", e0);
   }
 
-  void parse_rule()
+  void parse_syntax_rule()
   {
-    eventHandler->startNonterminal(L"rule", e0);
-    consume(1);                     // identifier
+    eventHandler->startNonterminal(L"syntax_rule", e0);
+    consume(1);                     // metaa_identifier
     lookahead1W(3);                 // whitespace^token | '='
     consume(18);                    // '='
-    lookahead1W(8);                 // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
-                                    // '[' | '{'
+    lookahead1W(8);                 // metaa_identifier | terminal_string | integer | hexadecimal_number |
+                                    // whitespace^token | '(' | '[' | '{'
     whitespace();
-    parse_expression();
+    parse_definition_list();
     consume(17);                    // ';'
-    eventHandler->endNonterminal(L"rule", e0);
+    eventHandler->endNonterminal(L"syntax_rule", e0);
   }
 
-  void parse_expression()
+  void parse_definition_list()
   {
-    eventHandler->startNonterminal(L"expression", e0);
-    parse_exception();
-    eventHandler->endNonterminal(L"expression", e0);
-  }
-
-  void parse_exception()
-  {
-    eventHandler->startNonterminal(L"exception", e0);
-    parse_choice();
-    for (;;)
-    {
-      if (l1 != 15)                 // '-'
-      {
-        break;
-      }
-      consume(15);                  // '-'
-      lookahead1W(8);               // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
-                                    // '[' | '{'
-      whitespace();
-      parse_choice();
-    }
-    eventHandler->endNonterminal(L"exception", e0);
-  }
-
-  void parse_choice()
-  {
-    eventHandler->startNonterminal(L"choice", e0);
-    parse_term();
+    eventHandler->startNonterminal(L"definition_list", e0);
+    parse_single_definition();
     for (;;)
     {
       if (l1 != 22)                 // '|'
@@ -596,12 +570,31 @@ private:
         break;
       }
       consume(22);                  // '|'
-      lookahead1W(8);               // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
-                                    // '[' | '{'
+      lookahead1W(8);               // metaa_identifier | terminal_string | integer | hexadecimal_number |
+                                    // whitespace^token | '(' | '[' | '{'
+      whitespace();
+      parse_single_definition();
+    }
+    eventHandler->endNonterminal(L"definition_list", e0);
+  }
+
+  void parse_single_definition()
+  {
+    eventHandler->startNonterminal(L"single_definition", e0);
+    parse_term();
+    for (;;)
+    {
+      if (l1 != 14)                 // ','
+      {
+        break;
+      }
+      consume(14);                  // ','
+      lookahead1W(8);               // metaa_identifier | terminal_string | integer | hexadecimal_number |
+                                    // whitespace^token | '(' | '[' | '{'
       whitespace();
       parse_term();
     }
-    eventHandler->endNonterminal(L"choice", e0);
+    eventHandler->endNonterminal(L"single_definition", e0);
   }
 
   void parse_term()
@@ -611,17 +604,24 @@ private:
     for (;;)
     {
       lookahead1W(9);               // whitespace^token | ')' | ',' | '-' | ';' | ']' | '|' | '}'
-      if (l1 != 14)                 // ','
+      if (l1 != 15)                 // '-'
       {
         break;
       }
-      consume(14);                  // ','
-      lookahead1W(8);               // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
-                                    // '[' | '{'
+      consume(15);                  // '-'
+      lookahead1W(8);               // metaa_identifier | terminal_string | integer | hexadecimal_number |
+                                    // whitespace^token | '(' | '[' | '{'
       whitespace();
-      parse_factor();
+      parse_exception();
     }
     eventHandler->endNonterminal(L"term", e0);
+  }
+
+  void parse_exception()
+  {
+    eventHandler->startNonterminal(L"exception", e0);
+    parse_factor();
+    eventHandler->endNonterminal(L"exception", e0);
   }
 
   void parse_factor()
@@ -633,7 +633,8 @@ private:
       lookahead1W(1);               // whitespace^token | '*'
       consume(12);                  // '*'
     }
-    lookahead1W(7);                 // identifier | terminal | hexadecimal_number | whitespace^token | '(' | '[' | '{'
+    lookahead1W(7);                 // metaa_identifier | terminal_string | hexadecimal_number | whitespace^token |
+                                    // '(' | '[' | '{'
     whitespace();
     parse_primary();
     eventHandler->endNonterminal(L"factor", e0);
@@ -644,20 +645,20 @@ private:
     eventHandler->startNonterminal(L"primary", e0);
     switch (l1)
     {
-    case 1:                         // identifier
-      consume(1);                   // identifier
+    case 1:                         // metaa_identifier
+      consume(1);                   // metaa_identifier
       break;
-    case 2:                         // terminal
-      consume(2);                   // terminal
+    case 2:                         // terminal_string
+      consume(2);                   // terminal_string
       break;
     case 19:                        // '['
-      parse_optional();
+      parse_optional_sequence();
       break;
     case 21:                        // '{'
-      parse_repetition();
+      parse_repeted_sequence();
       break;
     case 9:                         // '('
-      parse_group();
+      parse_grouped_sequence();
       break;
     default:
       parse_character_definition();
@@ -666,40 +667,40 @@ private:
     eventHandler->endNonterminal(L"primary", e0);
   }
 
-  void parse_optional()
+  void parse_optional_sequence()
   {
-    eventHandler->startNonterminal(L"optional", e0);
+    eventHandler->startNonterminal(L"optional_sequence", e0);
     consume(19);                    // '['
-    lookahead1W(8);                 // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
-                                    // '[' | '{'
+    lookahead1W(8);                 // metaa_identifier | terminal_string | integer | hexadecimal_number |
+                                    // whitespace^token | '(' | '[' | '{'
     whitespace();
-    parse_expression();
+    parse_definition_list();
     consume(20);                    // ']'
-    eventHandler->endNonterminal(L"optional", e0);
+    eventHandler->endNonterminal(L"optional_sequence", e0);
   }
 
-  void parse_repetition()
+  void parse_repeted_sequence()
   {
-    eventHandler->startNonterminal(L"repetition", e0);
+    eventHandler->startNonterminal(L"repeted_sequence", e0);
     consume(21);                    // '{'
-    lookahead1W(8);                 // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
-                                    // '[' | '{'
+    lookahead1W(8);                 // metaa_identifier | terminal_string | integer | hexadecimal_number |
+                                    // whitespace^token | '(' | '[' | '{'
     whitespace();
-    parse_expression();
+    parse_definition_list();
     consume(23);                    // '}'
-    eventHandler->endNonterminal(L"repetition", e0);
+    eventHandler->endNonterminal(L"repeted_sequence", e0);
   }
 
-  void parse_group()
+  void parse_grouped_sequence()
   {
-    eventHandler->startNonterminal(L"group", e0);
+    eventHandler->startNonterminal(L"grouped_sequence", e0);
     consume(9);                     // '('
-    lookahead1W(8);                 // identifier | terminal | integer | hexadecimal_number | whitespace^token | '(' |
-                                    // '[' | '{'
+    lookahead1W(8);                 // metaa_identifier | terminal_string | integer | hexadecimal_number |
+                                    // whitespace^token | '(' | '[' | '{'
     whitespace();
-    parse_expression();
+    parse_definition_list();
     consume(11);                    // ')'
-    eventHandler->endNonterminal(L"group", e0);
+    eventHandler->endNonterminal(L"grouped_sequence", e0);
   }
 
   void parse_character_definition()
@@ -769,16 +770,16 @@ private:
     consume(8);                     // '%TOKENS%'
     for (;;)
     {
-      lookahead1W(5);               // identifier | whitespace^token | EOF | '(*'
+      lookahead1W(5);               // metaa_identifier | whitespace^token | EOF | '(*'
       if (l1 == 7)                  // EOF
       {
         break;
       }
       switch (l1)
       {
-      case 1:                       // identifier
+      case 1:                       // metaa_identifier
         whitespace();
-        parse_rule();
+        parse_syntax_rule();
         break;
       default:
         whitespace();
@@ -1251,8 +1252,8 @@ const int ISO_EBNF_EXT::EXPECTED[] =
 const wchar_t *ISO_EBNF_EXT::TOKEN[] =
 {
   L"%ERROR",
-  L"identifier",
-  L"terminal",
+  L"metaa_identifier",
+  L"terminal_string",
   L"character",
   L"integer",
   L"hexadecimal_number",
