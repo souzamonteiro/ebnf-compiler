@@ -1,19 +1,3 @@
-%{
-#include <stdio.h>
-#include "c90.tab.h"
-
-void count(void);
-void comment(void);
-int check_type(void);
-
-extern FILE *yyin;
-
-int column = 0;
-
-#define YYDEBUG 1
-int yydebug = 1;
-%}
-
 %token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
@@ -431,21 +415,14 @@ function_definition
 	;
 
 %%
+#include <stdio.h>
 
-void yyerror(const char *s) {
-    fprintf(stderr, "Syntax error: %s\n", s);
-}
+extern char yytext[];
+extern int column;
 
-int main(int argc, char **argv) {
-    if (argc > 1) {
-        FILE *f = fopen(argv[1], "r");
-        if (!f) {
-            perror(argv[1]);
-            return 1;
-        }
-        yyin = f;
-    }
-    if (yyparse() == 0)
-        printf("Parsing completed successfully.\n");
-    return 0;
+yyerror(s)
+char *s;
+{
+	fflush(stdout);
+	printf("\n%*s\n%*s\n", column, "^", column, s);
 }

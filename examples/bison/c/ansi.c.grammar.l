@@ -1,21 +1,16 @@
-%{
-#include <stdio.h>
-#include "c90.tab.h"
-
-void count(void);
-void comment(void);
-int check_type(void);
-
-extern int column;
-%}
-
-
 D			[0-9]
 L			[a-zA-Z_]
 H			[a-fA-F0-9]
 E			[Ee][+-]?{D}+
 FS			(f|F|l|L)
 IS			(u|U|l|L)*
+
+%{
+#include <stdio.h>
+#include "ansi.c.grammar.tab.h"
+
+void count();
+%}
 
 %%
 "/*"			{ comment(); }
@@ -118,34 +113,63 @@ L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); }
 
 %%
 
-int yywrap(void) { return 1; }
-
-void comment(void) { 
-    char c, c1;
-
-loop:
-    while ((c = input()) != '*' && c != 0)
-        putchar(c);
-
-    if ((c1 = input()) != '/' && c != 0) {
-        unput(c1);
-        goto loop;
-    }
-
-    if (c != 0)
-        putchar(c1);
+yywrap()
+{
+	return(1);
 }
 
-int check_type(void) { return IDENTIFIER; }
 
-void count(void) {
-    int i;
-    for (i = 0; yytext[i] != '\0'; i++)
-        if (yytext[i] == '\n')
-            column = 0;
-        else if (yytext[i] == '\t')
-            column += 8 - (column % 8);
-        else
-            column++;
-    ECHO;
+comment()
+{
+	char c, c1;
+
+loop:
+	while ((c = input()) != '*' && c != 0)
+		putchar(c);
+
+	if ((c1 = input()) != '/' && c != 0)
+	{
+		unput(c1);
+		goto loop;
+	}
+
+	if (c != 0)
+		putchar(c1);
+}
+
+
+int column = 0;
+
+void count()
+{
+	int i;
+
+	for (i = 0; yytext[i] != '\0'; i++)
+		if (yytext[i] == '\n')
+			column = 0;
+		else if (yytext[i] == '\t')
+			column += 8 - (column % 8);
+		else
+			column++;
+
+	ECHO;
+}
+
+
+int check_type()
+{
+/*
+* pseudo code --- this is what it should check
+*
+*	if (yytext == type_name)
+*		return(TYPE_NAME);
+*
+*	return(IDENTIFIER);
+*/
+
+/*
+*	it actually will only return IDENTIFIER
+*/
+
+	return(IDENTIFIER);
 }
